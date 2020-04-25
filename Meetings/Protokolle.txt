@@ -1,0 +1,38 @@
+CYK-Pojekt Meeting Protokolle
+
+25.4.2020 von 10:00 bis 11:00
+Anwesenheit: alle waren anwesend
+Meeting: per Zoom
+
+Themen die Besprochen wurden:
+- Verteilung/Besprechung der Aufgaben 
+- Planung der Milensteine
+- Planung des nächsten Treffens
+- Einrichten des Git
+- Organisatorisches
+
+die ersten Bereiche(die bearbeitet werden müssen) wurden verteilt
+Benji: Bereich Chomsky-Normalform 
+- Anforderungen für Datenstruckur festlegen 
+- Epsilon Elimination
+- Kettenregel Zyklen Elemination
+- etc
+
+Simon: Bereich Grammatik einlesen
+- Input Syntax festlegen
+- Grammatik einlesen realiseren 
+- Grammatik überprüfen 
+- in vernünftige (für Chomsky Normalform) Datenstrucktur übersetzen
+- etc
+
+Lukas: Bereich Latex output
+- Einarbeitung/Auseinandersetung in Latex
+- Auseinandersetung mit Literate Programming und noweb
+- etc
+
+Milensteine festgelegt
+1. Bereiche Grammatik einlesen und Latex output fertig
+2. erste Hälfte Chomsky-Normalform fertig
+3. zweite Hälfte Chomsky-Normalform und CYK-Algorithmus fertig
+
+nächstes Meeting in 2 Wochen festgelegt (9.5.)
