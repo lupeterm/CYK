@@ -6,7 +6,7 @@ Meeting: per Zoom
 
 Themen die Besprochen wurden:
 - Verteilung/Besprechung der Aufgaben 
-- Planung der Milensteine
+- Planung der Meilensteine
 - Planung des nächsten Treffens
 - Einrichten des Git
 - Organisatorisches
@@ -22,7 +22,7 @@ Simon: Bereich Grammatik einlesen
 - Input Syntax festlegen
 - Grammatik einlesen realiseren 
 - Grammatik überprüfen 
-- in vernünftige (für Chomsky Normalform) Datenstrucktur übersetzen
+- in vernünftige (für Chomsky Normalform) Datenstruktur übersetzen
 - etc
 
 Lukas: Bereich Latex output
