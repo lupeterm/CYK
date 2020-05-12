@@ -1,45 +1,66 @@
-import input
-word = ["b", "a", "b", "a","b","a"]
-n = len(word)
-grammar = input.cfg
-input.cfg.new_grammar(grammar)
-print(grammar.rules)
+import eingabe
+
+grammar = eingabe.cfg
+eingabe.cfg.new_grammar(grammar)
+
+
+def get_word():
+    word = input("what is the word?\n")
+    c = []
+    for i in word:
+        c.append(i)
+    return c
 
 
 # get index of nonterminal the rule "belongs" to
-def check_rule(w_teil):
-    for nonT_rules in grammar.rules:
-        if nonT_rules.find(w_teil) != -1:
-            return grammar.rules.index(nonT_rules)
-    return 999
+def check_rule(nonTs):
+    indices = []
+    for lhs in grammar.rules:
+        if lhs.find(nonTs) != -1:
+            indices.append(grammar.rules.index(lhs))
+        elif lhs.find(nonTs[::1]) != -1 and len(nonTs) > 1:
+            indices.append(grammar.rules.index(lhs))
+    return indices
 
-# to check if the word is in a language
+
+def matrix_mult(lhs, rhs):
+    nonTs = []
+    for ntl in lhs:
+        for ntr in rhs:
+            nonTs.append(grammar.rules[x][0] for x in check_rule(ntl + ntr))
+    t = [x for inner in nonTs for x in inner]
+    return t
+
+
+tableau = []
+
 
 def cyk(word):
-    tableau = []
     # filling the diagonale with the nonterminals for each letter of the word
-    for i in range(0, len(word)):
-        tableau.append([""] * len(word))
-        tableau[i][i] = grammar.variables[check_rule(word[i])]
+    n = len(word)
+    for i in range(0, n):
+        tableau.append([""] * n)
+        tableau[i][i] = [grammar.variables[x] for x in check_rule(word[i])]
 
     for s in range(1, n):
         for i in range(1, n - s + 1):
+            res = []
             for k in range(i, i + s):
-                tmp1 = tableau[i-1][k-1]
-                tmp2 = tableau[k][i + s-1]
-                if check_rule(tmp1 + tmp2) != 999:
-                    tableau[i-1][i + s-1] = grammar.rules[check_rule(tmp1 + tmp2)][0]
+                horizontal = tableau[i - 1][k - 1]
+                vertical = tableau[k][i + s - 1]
+                res += (matrix_mult(horizontal, vertical))
+            tableau[i - 1][i + s - 1] = list(dict.fromkeys(res))
+    return tableau
 
 
-tab = cyk(word)
+#word = get_word()
+#n = len(word)
+#tab = cyk(word)
 #  S, A
 #  a
 #  S -> SS | AA, A -> a
-for i in tab:
-    print(i)
-if tab[0][-1]=="S":
-    print("w is in L")
-else:
-    print("w is not in L")
+#for i in tab:
+#    print(i)
 
-#S-> XZ | ZY, X -> ZX | a, Y -> XZ | a, Z -> YY | b
+
+# S-> XZ | ZY, X -> ZX | a, Y -> XZ | a, Z -> YY | b
