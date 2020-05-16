@@ -1,35 +1,28 @@
 from string import Template
 import cyk
 import tabulate
-import eingabe
 
-def toLatex(tab):
-    v_indices = (str(x + 1) for x in range(n))
-    h_indices = (str(x + 1) for x in range(n))
+def to_latex(table,length_word):
+    v_indices = (str(x + 1) for x in range(length_word))
+    h_indices = (str(x + 1) for x in range(length_word))
 
-    latex_string = str(tabulate.tabulate(tab, tablefmt="latex", showindex=iter(v_indices), headers=iter(h_indices)))
-    test2 = latex_string.replace("  1 & ", "\hline \n  1 & ", 1)
-    test3 = test2.replace("[]", "$\emptyset$")
-    test3 = Template("\documentclass[12pt]{article}\n \\usepackage{threeparttable}\n \\begin{document} \n $table\n \\begin{tablenotes}\item[1] $wL$\end{tablenotes}\end{document}%").safe_substitute(table=test3)
-    test4 = test3.replace("\\begin{tabular}{r"+"l"*n,"\\begin{tabular}{|r"+"|l"*n+"|")
-    test5 = test4.replace("['", "\{")
-    test6 = test5.replace("']", "\}")
-    test7 = test6.replace("', '", ", ")
-    if tab[0][-1][0].find(cyk.grammar.rules[0][0]) != -1:
-        test8 = test7.replace("$wL$", "$w \in L$")
-        return test8
+    latex_string = str(tabulate.tabulate(table, tablefmt="latex", showindex=iter(v_indices), headers=iter(h_indices)))
+    latex_string = latex_string.replace("  1 & ", r"\hline \n  1 & ", 1)
+    latex_string = latex_string.replace("[]", r"$\emptyset$")
+    latex_string = Template(r'\documentclass[12pt]{article}\n \usepackage{threeparttable}\n \begin{document} \n $table\n \begin{tablenotes}\item[1] $wL$\end{tablenotes}\end{document}%').safe_substitute(table=latex_string)
+    latex_string = latex_string.replace(r'\begin{tabular}{r"+"l"*n',r'\begin{tabular}{|r"+"|l"*n+"|')
+    latex_string = latex_string.replace("['", r"\{")
+    latex_string = latex_string.replace("']", r"\}")
+    latex_string = latex_string.replace("', '", ", ")
+    
+    if table[0][-1] == []:
+        latex_string = latex_string.replace(r"$wL$", r"$w \notin L$")
+        return latex_string
+    
+    elif table[0][-1][0].find(cyk.grammar.rules[0][0]) != -1:
+        latex_string = latex_string.replace("$wL$", r"$w \in L$")
+        return latex_string
+    
     else:
-        test8 = test7.replace("$wL$", "$w \\notin L$")
-        return test8
-
-
-word = cyk.get_word()
-n = len(word)
-tab = cyk.cyk(word)
-
-tabular = toLatex(tab)
-
-b = open(file="cyk.tex", mode="w")
-b.write(tabular)
-print(tabular)
-print("\nwritten in test.tex")
+        latex_string = latex_string.replace(r"$wL$", r"$w \notin L$")
+        return latex_string

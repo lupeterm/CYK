@@ -2,13 +2,20 @@ import re
 
 splitter = ['.', ';', '  ', ',']
 
+def new_word():
+        word = input("what is the word?\n")
+        c = []
+        for i in word:
+            c.append(i)
+        return c
 
 class cfg:
+    
     def __init__(self):
         self.variables = []
-        self.aplhabet = []
+        self.alphabet = []
         self.rules = []
-        self.start
+        self.start = None
 
     def set_variables(self, variables):
         self.variables = variables
@@ -58,6 +65,8 @@ class cfg:
                 return -1
         return 1
 
+    
+
     def new_grammar(self):
 
         # Variabeln input
@@ -85,8 +94,3 @@ class cfg:
             print(
                 "Es gibt Syntaktische Fehler in der Grammatik, bitte beheben sie diese und Probieren sie es noch einmal.\n")
             raise SystemExit
-
-
-#grammar = cfg
-#cfg.new_grammar(grammar)
-#print(grammar.rules)
