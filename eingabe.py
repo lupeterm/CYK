@@ -45,7 +45,8 @@ class cfg:
 
         # Regeln input
         for i in self.variables:
-            var = input("Bitte geben Sie alle Regeln für " + i + " an:\n")
+            print("Bitte geben Sie alle Regeln für " + i + " an:\n")
+            var = input("\"\E\" Wird als Epsilon behandelt.\n")
             for k in splitter:
                 var = var.replace(k, ' ')
             var = var.split()
@@ -62,11 +63,12 @@ class cfg:
         upper = []
         wrong = 0
         for i in rules:
-            for j in i:
-                if j.islower():
-                    lower.append(j)
-                if j.isupper():
-                    upper.append(j)
+            if i != "\E":
+                for j in i:
+                    if j.islower():
+                        lower.append(j)
+                    if j.isupper():
+                        upper.append(j)
         print(lower)
         print(upper)
         # Checkt ob alle benutzen Buchstaben in den Regeln auch im Alphabet gegeben sind
@@ -93,6 +95,3 @@ class cfg:
             if not(start in variables):
                 print("Es wurde ein undefiniertes Startsymbol angegeben. \n")
                 raise SystemExit
-
-test = cfg()
-cfg.new_grammar(test)
