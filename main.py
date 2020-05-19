@@ -4,9 +4,9 @@ import tabular
 
 
 
+grammar = eingabe.cfg()
+eingabe.cfg.new_grammar(grammar)
 word = eingabe.new_word()
-grammar = cfg ()
-cfg.new_grammar(grammar)
 #hier wird cnf aufgerufen
 table = cyk.cyk(word)
 
