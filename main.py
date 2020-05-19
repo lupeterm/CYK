@@ -3,13 +3,14 @@ import cyk
 import tabular
 
 
+
 word = eingabe.new_word()
-n = len(word)
-tab = cyk.cyk(word)
 
-table = tabular.to_latex(tab,n)
+#hier wird cnf aufgerufen
+table = cyk.cyk(word)
 
-b = open(file="cyk.tex", mode="w")
-b.write(table)
-print(table)
-print("\nwritten in test.tex")
+tableau = tabular.to_latex(table,len(word))
+
+file = open(file="CYK_Tableau.tex", mode="w")
+file.write(tableau)
+print("\nwritten in CYK_Tableau.tex")

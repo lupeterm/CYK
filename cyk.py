@@ -1,36 +1,32 @@
 import eingabe
 
-grammar = eingabe.cfg
+
+grammar = eingabe.cfg()
 eingabe.cfg.new_grammar(grammar)
 
 
 def check_rule(rhs):
-    indices = []
-    for lhs in grammar.rules:
-        if lhs.find(rhs) != -1:
-            indices.append(grammar.rules.index(lhs))
-        elif lhs.find(rhs[::1]) != -1 and len(rhs) > 1:
-            indices.append(grammar.rules.index(lhs))
-    return indices
+    symbols = [key for key, value in grammar.rules.items() if rhs in value or rhs[::1] in value]
+    
+    return symbols
 
 
 def matrix_mult(lhs, rhs):
     nonTs = []
     for ntl in lhs:
         for ntr in rhs:
-            nonTs.append(grammar.rules[x][0] for x in check_rule(ntl + ntr))
+            nonTs.append(check_rule( ntl + ntr))
     t = [x for inner in nonTs for x in inner]
     return t
 
 
-tableau = []
-
 
 def cyk(word):
+    tableau = []
     n = len(word)
     for i in range(0, n):
         tableau.append([""] * n)
-        tableau[i][i] = [grammar.variables[x] for x in check_rule(word[i])]
+        tableau[i][i] = [x for x in check_rule(word[i])]
 
     for s in range(1, n):
         for i in range(1, n - s + 1):

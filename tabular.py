@@ -10,7 +10,7 @@ def to_latex(table,length_word):
     latex_string = latex_string.replace("  1 & ", r"\hline \n  1 & ", 1)
     latex_string = latex_string.replace("[]", r"$\emptyset$")
     latex_string = Template(r'\documentclass[12pt]{article}\n \usepackage{threeparttable}\n \begin{document} \n $table\n \begin{tablenotes}\item[1] $wL$\end{tablenotes}\end{document}%').safe_substitute(table=latex_string)
-    latex_string = latex_string.replace(r'\begin{tabular}{r"+"l"*n',r'\begin{tabular}{|r"+"|l"*n+"|')
+    latex_string = latex_string.replace(r'\begin{tabular}{"r"'+"l"*length_word , r"\begin{tabular}{|r"+"|l"*length_word+"|")
     latex_string = latex_string.replace("['", r"\{")
     latex_string = latex_string.replace("']", r"\}")
     latex_string = latex_string.replace("', '", ", ")
@@ -19,7 +19,7 @@ def to_latex(table,length_word):
         latex_string = latex_string.replace(r"$wL$", r"$w \notin L$")
         return latex_string
     
-    elif table[0][-1][0].find(cyk.grammar.rules[0][0]) != -1:
+    elif table[0][-1][0].find(cyk.grammar.start) != -1:
         latex_string = latex_string.replace("$wL$", r"$w \in L$")
         return latex_string
     
