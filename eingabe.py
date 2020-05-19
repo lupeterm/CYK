@@ -45,7 +45,7 @@ class cfg:
 
         # Regeln input
         for i in self.variables:
-            print("Bitte geben Sie alle Regeln für " + i + " an:\n")
+            print("Bitte geben Sie alle Regeln für " + i + " an:")
             var = input("\"\E\" Wird als Epsilon behandelt.\n")
             for k in splitter:
                 var = var.replace(k, ' ')
@@ -61,7 +61,6 @@ class cfg:
     def check_syntax(self, variables, alphabet, rules):
         lower = []
         upper = []
-        wrong = 0
         for i in rules:
             if i != "\E":
                 for j in i:
@@ -72,22 +71,15 @@ class cfg:
         print(lower)
         print(upper)
         # Checkt ob alle benutzen Buchstaben in den Regeln auch im Alphabet gegeben sind
+
         for low in lower:
-            wrong = 0
-            for alph in alphabet:
-                if low != alph:
-                    wrong += 1
-            if wrong >= len(alphabet):
+            if not(low in alphabet):
                 print("Es wurden undefinierte Buchstaben angegeben.\n")
                 raise SystemExit
 
         # Checkt ob alle benutzen Variablen in den Regeln auch gegeben sind
         for up in upper:
-            wrong = 0
-            for var in variables:
-                if up != var:
-                    wrong += 1
-            if wrong == len(variables):
+            if not(up in variables):
                 print("Es wurden undefinierte Variabeln angegeben.\n")
                 raise SystemExit
 
