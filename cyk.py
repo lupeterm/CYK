@@ -1,5 +1,13 @@
+import eingabe
+
+
+grammar = eingabe.cfg()
+eingabe.cfg.new_grammar(grammar)
+
+
 def check_rule(rhs):
     symbols = [key for key, value in grammar.rules.items() if rhs in value or rhs[::1] in value]
+    
     return symbols
 
 

@@ -68,6 +68,8 @@ class cfg:
                         lower.append(j)
                     if j.isupper():
                         upper.append(j)
+        print(lower)
+        print(upper)
         # Checkt ob alle benutzen Buchstaben in den Regeln auch im Alphabet gegeben sind
 
         for low in lower:
