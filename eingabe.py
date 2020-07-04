@@ -15,7 +15,7 @@ class cfg:
     def __init__(self):
         self.variables = []
         self.alphabet = []
-        self.rules = defaultdict(list)
+        self.rules = defaultdict(set)
         self.start = None
 
     def set_variables(self, variables):
@@ -25,7 +25,7 @@ class cfg:
         self.alphabet = alphabet
 
     def set_rules(self, key, value):
-        self.rules[key].append(value)
+        self.rules[key].update(value)
 
     def set_start(self, start):
         self.start = start
@@ -62,7 +62,7 @@ class cfg:
         lower = []
         upper = []
         for i in rules:
-            if i != "\E":
+            if i != r'\E':
                 for j in i:
                     if j.islower():
                         lower.append(j)
