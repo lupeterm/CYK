@@ -1,14 +1,19 @@
+import string
+
 import cyk
 import eingabe
 
+ALPH = set(string.ascii_uppercase)
+
 
 def cnf(grammar):
-    nrules = epsilon_elim(grammar.start, grammar.rules)
-    return nrules
+    newG = epsilon_elim(grammar.start, grammar.rules)
+    newg = longright_elim(grammar.variables, grammar.rules)
+    return newG
 
 
-def epsilon_elim(start,rules):
-    # idea: get keys that lead to epsilon and then transform other rules
+def epsilon_elim(start, rules):
+    # get keys that lead to epsilon and then transform other rules
     eps = r'\E'
     eps_keys = cyk.check_rule(rules, eps)
     if not eps_keys:
@@ -18,9 +23,9 @@ def epsilon_elim(start,rules):
         tmprule = set()
         for v in value:
             tmpkey.update(char for char in eps_keys if char in v)
-            tmprule.update(v.replace(char, "") for char in tmpkey for v in value if char in v)  # create rules by removing characters
+            tmprule.update(v.replace(char, "") for char in tmpkey for v in value if
+                           char in v)  # create rules by removing characters
         value.update(tmprule)
-
 
     for k, v in rules.items():
         for j in v:
@@ -28,7 +33,7 @@ def epsilon_elim(start,rules):
                 v.add(r'\E')
                 v.remove('')
     for e in eps_keys:
-            rules[e].remove(r'\E')
+        rules[e].remove(r'\E')
     rules[start].add(r'\E')
     return rules
 
@@ -60,5 +65,22 @@ def uniso_term_right_elim(grammar):
     return grammar
 
 
-def longright_elim(grammar):
-    return grammar
+def longright_elim(variables, rules):
+    global ALPH
+    ALPH -= variables
+    new_dict = {}
+    print(rules)
+    for key in list(rules.keys()):
+        tmpval = (rules.get(key))  # values per key
+        tmpcpy = tmpval  # mutable copy of tmpval
+        for val in tmpval:
+            if len(val) > 2:
+                new_key = ALPH.pop()
+                new_values = {val[-2:]}  # last two characters of val
+                val1 = val[:-2] + new_key  # create new rule out of lhs part of val and new key
+                tmpcpy.remove(val)  # remove old rule
+                tmpcpy.add(val1)  # add updated rule
+                new_dict.update({new_key: new_values})
+        new_dict.update({key: set(tmpval)})
+
+    return new_dict

@@ -1,20 +1,12 @@
-import CnfTest
 import eingabe
 import cyk
 import tabular
 import cnf
 
 grammar = eingabe.cfg()
-#eingabe.cfg.new_grammar(grammar)
+eingabe.cfg.new_grammar(grammar)
 word = eingabe.new_word()
-grammar.rules = {
-            'S': {'AA', 'AB'},
-            'A': {'a', r'\E'},
-            'B': {'BB', 'b'}
-        }
-grammar.variables = {'S','A','B'}
-grammar.start = 'S'
-#grammar.rules = cnf.cnf(grammar)  # bring CFG in Chomsky NF
+grammar.rules = cnf.cnf(grammar)  # bring CFG in Chomsky NF
 
 table = cyk.cyk(grammar, word)       # run CYK algorithm
 tableau = tabular.to_latex(table, len(word), grammar.start)  # format the CYK table into a LaTeX string
