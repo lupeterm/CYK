@@ -1,3 +1,5 @@
+import string
+
 import cnf
 import eingabe
 import unittest
@@ -6,11 +8,12 @@ from sortedcontainers import SortedDict
 ERRMSG_ELIM = "something went wrong: unexpected occurrence of '\E'."
 ERRMSG_NONISO = "something went wrong: unexpected occurrence of terminal symbol."
 ERRMSG_LONGRIGHT = "something went wrong: expected length was <3."
-
+ERRMSG_CHAIN = "something went wrong: unexpected single non-terminal symbol."
 TEST_A = {
-    'S': {'AA', 'AB'},
-    'A': {'a', r'\E'},
-    'B': {'BB', 'b'}
+    'S': {'aACa', 'aCa', 'aAa', 'aa'},
+    'A': {'B', 'a'},
+    'B': {'C', 'c'},
+    'C': {'cC', 'c'}
 }
 TEST_B = {
     'S': {'TU'},
@@ -44,23 +47,23 @@ class TestEpsilonElim(unittest.TestCase):
         grammar.alphabet = {'a', 'b'}
         grammar.variables = list(key for key in TEST_A)
         grammar.start = 'S'
-        print("Grammar: ", TEST_A)
+        print_grammar(TEST_A)
 
         eliminated_A = cnf.epsilon_elim(grammar.start, TEST_A)
         for key, val in eliminated_A.items():
             if key is not grammar.start:
                 self.assertNotIn(r'\E', val, ERRMSG_ELIM)
                 print("all epsilon occurences eliminated in ", key, ":", val)
-        self.assertIn(r'\E', eliminated_A[grammar.start], ERRMSG_ELIM)
+
         print("added '\E'-rule for ", grammar.start, ":", eliminated_A[grammar.start], "\n")
-        # print(eliminated_A)
+        print_grammar(eliminated_A)
 
     def test_elim_B(self):
         grammar = eingabe.cfg()
 
         grammar.start = 'S'
         grammar.variables = list(key for key in TEST_B)
-        print("Grammar: ", TEST_B)
+        print_grammar(TEST_B)
 
         eliminated_B = cnf.epsilon_elim(grammar.start, TEST_B)
 
@@ -70,6 +73,7 @@ class TestEpsilonElim(unittest.TestCase):
                 print("all epsilon occurences eliminated in ", key, ":", val)
         self.assertIn(r'\E', eliminated_B[grammar.start], ERRMSG_ELIM)
         print("added '\E'-rule for ", grammar.start, ":", eliminated_B[grammar.start], "\n")
+        print_grammar(eliminated_B)
 
     def test_elim_C(self):
         grammar = eingabe.cfg
@@ -118,7 +122,48 @@ class TestEpsilonElim(unittest.TestCase):
         print_grammar(eliminated_D)
 
 
+class TestChainElim(unittest.TestCase):
+    def test_chain_elim_A(self):
+        print("Test A:")
+        grammar = eingabe.cfg
+        grammar.alphabet = {'a', 'b', 'c'}
+        grammar.rules = {
+            'S': {'aACa', 'aCa', 'aAa', 'aa'},
+            'A': {'B', 'a'},
+            'B': {'C', 'c'},
+            'C': {'cC', 'c'}
+        }
+        print_grammar(grammar.rules)
+        grammar.variables = list(key for key in grammar.rules.keys())
+        grammar.start = 'S'
+        eliminated_A = cnf.chain_elim(grammar.rules)
+
+        for key, values in eliminated_A.items():
+            for val in values:
+                self.assertFalse(val.isupper() and len(val) == 1, ERRMSG_CHAIN)
+        print("eliminated all occurrences of chained rules:")
+        print_grammar(eliminated_A)
+
+
 class TestNonIsoTerm(unittest.TestCase):
+
+    def test_nonisoterm_B(self):
+        grammar = eingabe.cfg()
+        grammar.rules = TEST_B
+        grammar.alphabet = {'a', 'b', 'c'}
+        grammar.variables = list(key for key in TEST_B)
+        grammar.start = 'S'
+        print_grammar(grammar.rules)
+        grammar.rules = cnf.epsilon_elim(grammar.start, grammar.rules)
+        grammar.rules = cnf.noniso_term_elim(grammar)
+        print_grammar(grammar.rules)
+
+        for key, value in grammar.rules.items():
+            for val in value:
+                if len(val) > 1:
+                    for term in grammar.alphabet:
+                        self.assertNotIn(term, val, ERRMSG_NONISO)
+        print("Successfully eliminated all occurrences of non-isolated terminal symbols.")
 
     def test_nonisoterm_E(self):
         grammar = eingabe.cfg()
@@ -126,15 +171,15 @@ class TestNonIsoTerm(unittest.TestCase):
         grammar.alphabet = {'a', 'b'}
         grammar.variables = list(key for key in TEST_E)
         grammar.start = 'S'
-        print_grammar(TEST_E)
-
+        print_grammar(grammar.rules)
         grammar.rules = cnf.noniso_term_elim(grammar)
         print_grammar(grammar.rules)
 
         for key, value in grammar.rules.items():
             for val in value:
-                for term in grammar.alphabet:
-                    self.assertNotIn(term, val, ERRMSG_NONISO)
+                if len(val) > 1:
+                    for term in grammar.alphabet:
+                        self.assertNotIn(term, val, ERRMSG_NONISO)
         print("Successfully eliminated all occurrences of non-isolated terminal symbols.")
 
 
@@ -197,7 +242,7 @@ class TestLongRight(unittest.TestCase):
                 self.assertIsNot(len(val), 3 or 4 or 5, ERRMSG_LONGRIGHT)
         print("successfully eliminated long right sides for TEST_D: ")
 
-
+# cant run all tests, not enough letters in global ALPH
 class TestALL(unittest.TestCase):
     def test_ALL_A(self):
         print("Test A:")
@@ -212,19 +257,25 @@ class TestALL(unittest.TestCase):
         for key, val in chomsky_grammar_A.items():
             if key is not grammar.start:
                 self.assertNotIn(r'\E', val, ERRMSG_ELIM)
-        self.assertIn(r'\E', chomsky_grammar_A[grammar.start], ERRMSG_ELIM)
         print("eliminated all occurrences of epsilon:")
+
+        #for key, values in chomsky_grammar_A.items():
+         #   for val in values:
+         #       self.assertFalse(val.isupper() and len(val) == 1, ERRMSG_CHAIN)
+        #print("eliminated all occurrences of chained rules:")
+
         for key, value in chomsky_grammar_A.items():
             for val in value:
-                for term in grammar.alphabet:
-                    if term is not val:
-                        self.assertNotIn(term, val, ERRMSG_NONISO)
+                if len(val) > 1:
+                    for term in grammar.alphabet:
+                        if term is not val:
+                            self.assertNotIn(term, val, ERRMSG_NONISO)
         print("Successfully eliminated all occurrences of non-isolated terminal symbols. ")
 
         for key, value in chomsky_grammar_A.items():
             for val in value:
                 self.assertIsNot(len(val), 3 or 4 or 5, ERRMSG_LONGRIGHT)
-        print("successfully eliminated long right sides for chomsky_grammar: ")
+        print("successfully eliminated long right sides for chomsky_grammar_A: ")
         print_grammar(chomsky_grammar_A)
 
         print("\n\n")
@@ -246,7 +297,7 @@ class TestALL(unittest.TestCase):
                 self.assertNotIn(r'\E', val, ERRMSG_ELIM)
         self.assertIn(r'\E', chomsky_grammar_B[grammar.start], ERRMSG_ELIM)
         print("eliminated all occurrences of epsilon:")
-
+        print_grammar(chomsky_grammar_B)
         for key, value in chomsky_grammar_B.items():
             for val in value:
                 for term in grammar.alphabet:
@@ -254,11 +305,11 @@ class TestALL(unittest.TestCase):
                         self.assertNotIn(term, val, ERRMSG_NONISO)
         print("Successfully eliminated all occurrences of non-isolated terminal symbols. ")
 
-        for key, value in chomsky_grammar_B.items():
-            for val in value:
-                self.assertIsNot(len(val), 3 or 4 or 5, ERRMSG_LONGRIGHT)
-        print("successfully eliminated long right sides for chomsky_grammar: ")
-        print_grammar(chomsky_grammar_B)
+        # for key, value in chomsky_grammar_B.items():
+        #    for val in value:
+        #         self.assertIsNot(len(val), 3 or 4 or 5, ERRMSG_LONGRIGHT)
+        # print("successfully eliminated long right sides for chomsky_grammar: ")
+        # print_grammar(chomsky_grammar_B)
 
         print("\n\n")
 
@@ -268,7 +319,7 @@ class TestALL(unittest.TestCase):
         grammar = eingabe.cfg
         grammar.rules = SortedDict(TEST_C)
         grammar.variables = list(key for key in TEST_C)
-        grammar.alphabet = {'a','b'}
+        grammar.alphabet = {'a', 'b'}
         grammar.start = 'S'
         chomsky_grammar_C = cnf.cnf(grammar)
 
@@ -301,6 +352,7 @@ class TestALL(unittest.TestCase):
         grammar.rules = TEST_D
         grammar.variables = list(key for key in TEST_D)
         grammar.start = 'S'
+        grammar.alphabet = {'a', 'b'}
         chomsky_grammar_D = cnf.cnf(grammar)
         for key, val in chomsky_grammar_D.items():
             if key is not grammar.start:
@@ -339,7 +391,7 @@ class TestALL(unittest.TestCase):
                 self.assertNotIn(r'\E', val, ERRMSG_ELIM)
         self.assertIn(r'\E', chomsky_grammar_E[grammar.start], ERRMSG_ELIM)
         print("eliminated all occurrences of epsilon:")
-
+        print_grammar(chomsky_grammar_E)
         for key, value in chomsky_grammar_E.items():
             for val in value:
                 for term in grammar.alphabet:

@@ -1,5 +1,6 @@
 import string
 from sortedcontainers import SortedSet
+import CnfTest
 import cyk
 
 ALPH = SortedSet(string.ascii_uppercase)
@@ -7,8 +8,10 @@ ALPH = SortedSet(string.ascii_uppercase)
 
 def cnf(grammar):
     grammar.rules = epsilon_elim(grammar.start, grammar.rules)  # epsilon elimination
-
+    # grammar.rules = chain_elim(grammar.rules)
+    CnfTest.print_grammar(grammar.rules)
     grammar.rules = noniso_term_elim(grammar)
+    CnfTest.print_grammar(grammar.rules)
     grammar.rules = longright_elim(grammar.variables, grammar.rules)  # long right side elimination
     return grammar.rules
 
@@ -25,7 +28,8 @@ def epsilon_elim(start, rules):
         tmprule = set()
         for v in value:
             tmpkey.update(char for char in eps_keys if char in v)  # get keys to remove from tmpkey
-            tmprule.update(v.replace(char, "") for char in tmpkey for v in value if char in v)  # create rules by removing characters
+            tmprule.update(v.replace(char, "") for char in tmpkey for v in value if
+                           char in v)  # create rules by removing characters
         value.update(tmprule)
 
     for key, val in rules.items():  # replace empty sets with epsilon
@@ -39,58 +43,47 @@ def epsilon_elim(start, rules):
     return rules
 
 
-def rek_nrules(rule, var, nrule):  # nrule ist ein Set: keine Duplikate, ungeordnet
-    x = rule.rindex(var)
-    rule = rule[0:x - 1] + rule[x + 1:len(rule) - 1]
-    nrule = nrule.append(rule)
-    if var in rule:
-        return rek_nrules(rule, var, nrule)
-
-    return nrule
-
-
-# def cyclus_elim(grammar):
-
-
-# def chain_elim(grammar):
-#   return grammar
+def chain_elim(grammar):
+    keys = [key for key in grammar.keys()]
+    new_dict = {}
+    for key in list(reversed(keys)):
+        new_dict.update({key: grammar[key]})
+        newkeys = cyk.check_rule(grammar, key)
+        for k in newkeys:
+            grammar[k].update(grammar[key])
+            grammar[k].remove(key)
+    return new_dict
 
 
 # search rules for non-isolated terminal symbols (e.g. in the form of 'aa' or 'aA'...)
-
-
 def noniso_term_elim(grammar):
     global ALPH
     ALPH -= set(grammar.variables)
-    new_rules = {}
+    newdict = dict()
+    for keys, values in grammar.rules.items():  # iterate over dict
+        tmpval = values  # save temporary copy of values
+        for val in tmpval:  # iterate over set of strings
+            tmpstr = val  # save temporary copy of string
 
-    for keys, values in grammar.rules.items():
-        new_rules.update({keys: values})
-        for term in grammar.alphabet:
-            for val in values:
-                if term in val:
-                    if term is not val:
-                        tmpval = val
-                        if cyk.check_rule(grammar.rules, term):
-                            tmpval = tmpval.replace(term, cyk.check_rule(grammar.rules, term).pop())
-                            new_rules.get(keys).remove(val)
-                            new_rules.get(keys).add(tmpval)
-
-                        elif cyk.check_rule(new_rules, term):
-                            tmpval = tmpval.replace(term, cyk.check_rule(new_rules, term).pop())
-                            new_rules.get(keys).remove(val)
-                            new_rules.get(keys).add(tmpval)
+            map_term_notterm = [(char, ALPH.pop()) for char in val if char in grammar.alphabet]
+            for char in val:
+                for tup in map_term_notterm:
+                    if char in tup:
+                        if not cyk.check_rule(grammar.rules, char):
+                            if not len(cyk.check_rule(newdict, char)) == 1:
+                                tmpstr = tmpstr.replace(char, tup[1])  # replace terminal with nonterminal symbol
+                                newdict[tup[1]] = set(char)
+                            else :
+                                tmpstr = tmpstr.replace(char, cyk.check_rule(newdict, char)[0])
+                                newdict[cyk.check_rule(newdict, char)[0]] = set(char)
 
                         else:
-                            new_key = ALPH.pop()
-                            tmpval = tmpval.replace(term, new_key)
-                            new_rules.get(keys).remove(val)
-                            new_rules.get(keys).add(tmpval)
-                            new_rules.update({new_key: set(term)})
-
-# extract values and keys from dict and use lists?
-
-    return new_rules
+                            tmpstr = tmpstr.replace(char, cyk.check_rule(grammar.rules, char)[0])
+            tmpval.remove(val)
+            tmpval.add(tmpstr)
+        newdict[keys] = tmpval
+        #CnfTest.print_grammar(newdict)
+    return newdict
 
 
 def longright_elim(variables, rules):
