@@ -1,6 +1,3 @@
-import re
-from collections import defaultdict
-
 splitter = ['.', ';', '  ', ',']
 
 def new_word():
@@ -15,7 +12,7 @@ class cfg:
     def __init__(self):
         self.variables = []
         self.alphabet = []
-        self.rules = defaultdict(set)
+        self.rules = dict(set())
         self.start = None
 
     def set_variables(self, variables):
