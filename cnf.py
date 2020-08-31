@@ -32,7 +32,6 @@ def epsilon_elim(start, rules):
             tmprule.update(v.replace(char, "") for char in tmpkey for v in value if
                            char in v)  # create rules by removing characters
         value.update(tmprule)
-    cnfTest.print_grammar(rules)
     for key, values in rules.items():  # replace empty sets with epsilon
         tmpval = values.copy()
         for string in values:
