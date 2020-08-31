@@ -5,12 +5,16 @@ import cyk
 
 def cnf(grammar):
     grammar.rules = epsilon_elim(grammar.start, grammar.rules)
+    print("Occurrences of epsilon eliminated.")
     cnfTest.print_grammar(grammar.rules)
     grammar.rules = chain_elim(grammar.rules)
+    print("Occurrences of chained rules eliminated.")
     cnfTest.print_grammar(grammar.rules)
     grammar.rules = non_iso_term_elim(grammar.rules, grammar.variables, grammar.alphabet)
+    print("Occurrences of non isolated terminal symbols eliminated.")
     cnfTest.print_grammar(grammar.rules)
     grammar.rules = long_right_elim(grammar.rules)
+    print("Occurrences of long right sides eliminated.")
     cnfTest.print_grammar(grammar.rules)
     return grammar.rules
 
@@ -28,13 +32,15 @@ def epsilon_elim(start, rules):
             tmprule.update(v.replace(char, "") for char in tmpkey for v in value if
                            char in v)  # create rules by removing characters
         value.update(tmprule)
-
+    cnfTest.print_grammar(rules)
     for key, values in rules.items():  # replace empty sets with epsilon
+        tmpval = values.copy()
         for string in values:
             if not string:
-                values.add(eps)
-                values.remove('')
-    for e in eps_keys:  # remove epsilon from all rules and add one to S
+                tmpval.add(eps)
+                tmpval.remove('')
+        rules[key] = tmpval
+    for e in eps_keys:
         rules[e].remove(r'\E')
     eps_keys = cyk.check_rule(rules, eps)
     if len(eps_keys) > 1 or not (len(eps_keys) == 1 and start in eps_keys):  # reiterate if new eps rules were created
