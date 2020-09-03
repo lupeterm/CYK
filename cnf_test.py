@@ -1,18 +1,19 @@
+"""module for unit testing"""
+import unittest
 import cnf
 import eingabe
-import unittest
 import cyk
 
-ERRMSG_ELIM = "something went wrong: unexpected occurrence of '\E'."
+ERRMSG_ELIM = r'something went wrong: unexpected occurrence of \E.'
 ERRMSG_NON_ISO = "something went wrong: unexpected occurrence of terminal symbol."
 ERRMSG_LONG_RIGHT = "something went wrong: expected length was <3."
 ERRMSG_CHAIN = "something went wrong: unexpected single non-terminal symbol."
 
 
-class TestCases_A(unittest.TestCase):
-
+class TestCasesA(unittest.TestCase):
+    """Unittests for cnf.py"""
     def setUp(self) -> None:
-        self.grammar = eingabe.cfg()
+        self.grammar = eingabe.CFG()
         self.grammar.rules = {
             'S': {'aACa'},
             'A': {'B', 'a'},
@@ -25,46 +26,52 @@ class TestCases_A(unittest.TestCase):
         print_grammar(self.grammar.rules)
 
     def test_epsilon_elim(self):
+        """unit test epsilon elimination"""
         self.grammar.rules = cnf.epsilon_elim(self.grammar.start, self.grammar.rules)
         for key, val in self.grammar.rules.items():
             if key is not self.grammar.start:
                 self.assertNotIn(r'\E', val, ERRMSG_ELIM)
-        print("eliminated all occurrences of epsilon:")
+        print("eliminated_ all occurrences of epsilon:")
         print_grammar(self.grammar.rules)
 
     def test_elim_chains(self):
-        eliminated_A = cnf.chain_elim(self.grammar.rules)
-        for key, values in eliminated_A.items():
+        """unit test of elimination of chained rules"""
+        eliminated_a = cnf.chain_elim(self.grammar.rules)
+        for values in eliminated_a.values():
             for val in values:
                 self.assertFalse(val.isupper() and len(val) == 1, ERRMSG_CHAIN)
-        print("eliminated all occurrences of chained rules:")
-        print_grammar(eliminated_A)
+        print("eliminated_ all occurrences of chained rules:")
+        print_grammar(eliminated_a)
 
     def test_elim_nonisoterm(self):
+        """unit test of elimination of non-isolated terminal symbols"""
+        self.grammar.rules = cnf.non_iso_term_elim(
+            self.grammar.rules, self.grammar.variables, self.grammar.alphabet
+        )
 
-        self.grammar.rules = cnf.non_iso_term_elim(self.grammar.rules, self.grammar.variables, self.grammar.alphabet)
-
-        for key, value in self.grammar.rules.items():
+        for value in self.grammar.rules.values():
             for string in value:
                 if len(string) > 1:
                     for term in self.grammar.alphabet:
                         self.assertNotIn(term, string, ERRMSG_NON_ISO)
-        print("Successfully eliminated all occurrences of non-isolated terminal symbols.")
+        print("Successfully eliminated_ all occurrences of non-isolated terminal symbols.")
 
     def test_elim_long_right(self):
+        """unit test of elimination of long right sides"""
         self.grammar.rules = cnf.cnf(self.grammar)
         print_grammar(self.grammar.rules)
-        for key, value in self.grammar.rules.items():
+        for value in self.grammar.rules.values():
             for val in value:
                 self.assertIsNot(len(val), 3 or 4 or 5, ERRMSG_LONG_RIGHT)
-        print("successfully eliminated long right sides for TEST_A: ")
+        print("successfully eliminated_ long right sides for TEST_A: ")
         print_grammar(self.grammar.rules)
 
 
-class TestCases_B(unittest.TestCase):
+class TestCasesB(unittest.TestCase):
+    """Unittests for cnf.py"""
 
     def setUp(self):
-        self.grammar = eingabe.cfg()
+        self.grammar = eingabe.CFG()
         self.grammar.rules = {
             'S': {'TU'},
             'T': {'aTb', r'\E'},
@@ -77,47 +84,54 @@ class TestCases_B(unittest.TestCase):
         print_grammar(self.grammar.rules)
 
     def test_epsilon_elim(self):
+        """unit test epsilon elimination"""
+
         self.grammar.rules = cnf.epsilon_elim(self.grammar.start, self.grammar.rules)
         eps_keys = cyk.check_rule(self.grammar.rules, r'\E')
         self.assertLessEqual(len(eps_keys), 1)
         if len(eps_keys) == 1:
             self.assertIn(self.grammar.start, eps_keys)
-        print("eliminated all occurrences of epsilon:")
+        print("eliminated_ all occurrences of epsilon:")
         print_grammar(self.grammar.rules)
 
     def test_elim_chains(self):
-        eliminated_B = cnf.chain_elim(self.grammar.rules)
-        for key, values in eliminated_B.items():
+        """unit test of elimination of chained rules"""
+        eliminated_b = cnf.chain_elim(self.grammar.rules)
+        for values in eliminated_b.values():
             for val in values:
                 self.assertFalse(val.isupper() and len(val) == 1, ERRMSG_CHAIN)
-        print("eliminated all occurrences of chained rules:")
-        print_grammar(eliminated_B)
+        print("eliminated_ all occurrences of chained rules:")
+        print_grammar(eliminated_b)
 
     def test_elim_nonisoterm(self):
-
-        eliminated_B = cnf.non_iso_term_elim(self.grammar.rules, self.grammar.variables, self.grammar.alphabet)
+        """unit test of elimination of non-isolated terminal symbols"""
+        eliminated_b = cnf.non_iso_term_elim(
+            self.grammar.rules, self.grammar.variables, self.grammar.alphabet
+        )
         print_grammar(self.grammar.rules)
 
-        for key, value in eliminated_B.items():
+        for value in eliminated_b.values():
             for string in value:
                 if len(string) > 1:
                     for term in self.grammar.alphabet:
                         self.assertNotIn(term, string, ERRMSG_NON_ISO)
-        print("Successfully eliminated all occurrences of non-isolated terminal symbols.")
+        print("Successfully eliminated_ all occurrences of non-isolated terminal symbols.")
 
     def test_elim_long_right(self):
-        shorted_B = cnf.long_right_elim(self.grammar.rules)
-        for key, value in shorted_B.items():
+        """unit test of elimination of long right sides"""
+        shorted_b = cnf.long_right_elim(self.grammar.rules)
+        for value in shorted_b.values():
             for val in value:
                 self.assertIsNot(len(val), 3 or 4 or 5, ERRMSG_LONG_RIGHT)
-        print("successfully eliminated long right sides for TEST_A: ")
-        print_grammar(shorted_B)
+        print("successfully eliminated_ long right sides for TEST_A: ")
+        print_grammar(shorted_b)
 
 
-class TestCases_C(unittest.TestCase):
+class TestCasesC(unittest.TestCase):
+    """Unittests for cnf.py"""
 
     def setUp(self):
-        self.grammar = eingabe.cfg()
+        self.grammar = eingabe.CFG()
         self.grammar.rules = {
             'S': {'ASA', 'BSB', r'\E'},
             'A': {'a'},
@@ -129,47 +143,55 @@ class TestCases_C(unittest.TestCase):
         print_grammar(self.grammar.rules)
 
     def test_epsilon_elim(self):
+        """unit test epsilon elimination"""
+
         self.grammar.rules = cnf.chain_elim(self.grammar.rules)
-        eliminated_C = cnf.epsilon_elim(self.grammar.start, self.grammar.rules)
-        for key, val in eliminated_C.items():
+        eliminated_c = cnf.epsilon_elim(self.grammar.start, self.grammar.rules)
+        for key, val in eliminated_c.items():
             if key is not self.grammar.start:
                 self.assertNotIn(r'\E', val, ERRMSG_ELIM)
-        print("eliminated all occurrences of epsilon:")
-        print_grammar(eliminated_C)
+        print("eliminated_ all occurrences of epsilon:")
+        print_grammar(eliminated_c)
 
     def test_elim_chains(self):
-        eliminated_C = cnf.chain_elim(self.grammar.rules)
-        for key, values in eliminated_C.items():
+        """unit test of elimination of chained rules"""
+        eliminated_c = cnf.chain_elim(self.grammar.rules)
+        for values in eliminated_c.values():
             for val in values:
                 self.assertFalse(val.isupper() and len(val) == 1, ERRMSG_CHAIN)
-        print("eliminated all occurrences of chained rules:")
-        print_grammar(eliminated_C)
+        print("eliminated_ all occurrences of chained rules:")
+        print_grammar(eliminated_c)
 
     def test_elim_nonisoterm(self):
-
-        eliminated_C = cnf.non_iso_term_elim(self.grammar.rules, self.grammar.variables, self.grammar.alphabet)
+        """unit test of elimination of non-isolated terminal symbols"""
+        eliminated_c = cnf.non_iso_term_elim(
+            self.grammar.rules, self.grammar.variables, self.grammar.alphabet
+        )
         print_grammar(self.grammar.rules)
 
-        for key, value in eliminated_C.items():
+        for value in eliminated_c.values():
             for string in value:
                 if len(string) > 1:
                     for term in self.grammar.alphabet:
                         self.assertNotIn(term, string, ERRMSG_NON_ISO)
-        print("Successfully eliminated all occurrences of non-isolated terminal symbols.")
+        print("Successfully eliminated_ all occurrences of non-isolated terminal symbols.")
 
     def test_elim_long_right(self):
-        shorted_C = cnf.long_right_elim(self.grammar.rules)
-        for key, value in shorted_C.items():
+        """unit test of elimination of long right sides"""
+        shorted_c = cnf.long_right_elim(self.grammar.rules)
+        for value in shorted_c.values():
             for val in value:
                 self.assertIsNot(len(val), 3 or 4 or 5, ERRMSG_LONG_RIGHT)
-        print("successfully eliminated long right sides for TEST_A: ")
-        print_grammar(shorted_C)
+        print("successfully eliminated_ long right sides for TEST_A: ")
+        print_grammar(shorted_c)
 
 
-class TestCases_D(unittest.TestCase):
+class TestCasesD(unittest.TestCase):
+
+    """Unittests for cnf.py"""
 
     def setUp(self):
-        self.grammar = eingabe.cfg()
+        self.grammar = eingabe.CFG()
         self.grammar.rules = {
             'S': {'LR', r'\E'},
             'L': {'ALLA', 'BLLB', r'\E'},
@@ -183,54 +205,62 @@ class TestCases_D(unittest.TestCase):
         print_grammar(self.grammar.rules)
 
     def test_epsilon_elim(self):
+        """unit test epsilon elimination"""
+
         self.grammar.rules = cnf.chain_elim(self.grammar.rules)
         self.grammar.rules = cnf.epsilon_elim(self.grammar.start, self.grammar.rules)
         print_grammar(self.grammar.rules)
         for key, val in self.grammar.rules.items():
             if key is not self.grammar.start:
                 self.assertNotIn(r'\E', val, ERRMSG_ELIM)
-        print("eliminated all occurrences of epsilon:")
+        print("eliminated_ all occurrences of epsilon:")
 
     def test_elim_chains(self):
-        eliminated_D = cnf.chain_elim(self.grammar.rules)
-        for key, values in eliminated_D.items():
+        """unit test of elimination of chained rules"""
+        eliminated_d = cnf.chain_elim(self.grammar.rules)
+        for values in eliminated_d.values():
             for val in values:
                 self.assertFalse(val.isupper() and len(val) == 1, ERRMSG_CHAIN)
-        print("eliminated all occurrences of chained rules:")
-        print_grammar(eliminated_D)
+        print("eliminated_ all occurrences of chained rules:")
+        print_grammar(eliminated_d)
 
     def test_elim_nonisoterm(self):
-
-        eliminated_D = cnf.non_iso_term_elim(self.grammar.rules, self.grammar.variables, self.grammar.alphabet)
+        """unit test of elimination of non-isolated terminal symbols"""
+        eliminated_d = cnf.non_iso_term_elim(
+            self.grammar.rules, self.grammar.variables, self.grammar.alphabet)
         print_grammar(self.grammar.rules)
 
-        for key, value in eliminated_D.items():
+        for value in eliminated_d.values():
             for string in value:
                 if len(string) > 1:
                     for term in self.grammar.alphabet:
                         self.assertNotIn(term, string, ERRMSG_NON_ISO)
-        print("Successfully eliminated all occurrences of non-isolated terminal symbols.")
+        print("Successfully eliminated_ all occurrences of non-isolated terminal symbols.")
 
     def test_elim_long_right(self):
+        """unit test of elimination of long right sides"""
         self.grammar.rules = cnf.epsilon_elim(self.grammar.start, self.grammar.rules)
         print_grammar(self.grammar.rules)
         self.grammar.rules = cnf.chain_elim(self.grammar.rules)
         print_grammar(self.grammar.rules)
-        self.grammar.rules = cnf.non_iso_term_elim(self.grammar.rules, self.grammar.variables, self.grammar.alphabet)
+        self.grammar.rules = cnf.non_iso_term_elim(
+            self.grammar.rules, self.grammar.variables, self.grammar.alphabet
+        )
         print_grammar(self.grammar.rules)
-        shorted_D = cnf.long_right_elim(self.grammar.rules)
-        for key, value in shorted_D.items():
+        shorted_d = cnf.long_right_elim(self.grammar.rules)
+        for value in shorted_d.values():
             for val in value:
                 self.assertIsNot(len(val), 3 or 4 or 5, ERRMSG_LONG_RIGHT)
-        print("successfully eliminated long right sides for TEST_A: ")
-        print_grammar(shorted_D)
+        print("successfully eliminated_ long right sides for TEST_A: ")
+        print_grammar(shorted_d)
 
 
-class TestCases_E(unittest.TestCase):
+class TestCasesE(unittest.TestCase):
+    """Unittests for cnf.py"""
 
     def setUp(self):
-        self.grammar = eingabe.cfg()
-        self.grammar = eingabe.cfg()
+        self.grammar = eingabe.CFG()
+        self.grammar = eingabe.CFG()
         self.grammar.rules = {
             'S': {'aaA'},
             'A': {'BAB', 'B', r'\E'},
@@ -243,46 +273,55 @@ class TestCases_E(unittest.TestCase):
         print_grammar(self.grammar.rules)
 
     def test_epsilon_elim(self):
+        """unit test epsilon elimination"""
+
         self.grammar.rules = cnf.chain_elim(self.grammar.rules)
-        eliminated_E = cnf.epsilon_elim(self.grammar.start, self.grammar.rules)
-        for key, val in eliminated_E.items():
+        eliminated_e = cnf.epsilon_elim(self.grammar.start, self.grammar.rules)
+        for key, val in eliminated_e.items():
             if key is not self.grammar.start:
                 self.assertNotIn(r'\E', val, ERRMSG_ELIM)
-        print("eliminated all occurrences of epsilon:")
-        print_grammar(eliminated_E)
+        print("eliminated_ all occurrences of epsilon:")
+        print_grammar(eliminated_e)
 
     def test_elim_chains(self):
-        eliminated_E = cnf.chain_elim(self.grammar.rules)
-        for key, values in eliminated_E.items():
+        """unit test of elimination of chained rules"""
+        eliminated_e = cnf.chain_elim(self.grammar.rules)
+        for values in eliminated_e.values():
             for val in values:
                 self.assertFalse(val.isupper() and len(val) == 1, ERRMSG_CHAIN)
-        print("eliminated all occurrences of chained rules:")
-        print_grammar(eliminated_E)
+        print("eliminated_ all occurrences of chained rules:")
+        print_grammar(eliminated_e)
 
     def test_elim_nonisoterm(self):
-
-        eliminated_E = cnf.non_iso_term_elim(self.grammar.rules, self.grammar.variables, self.grammar.alphabet)
+        """unit test of elimination of non-isolated terminal symbols"""
+        eliminated_e = cnf.non_iso_term_elim(
+            self.grammar.rules, self.grammar.variables, self.grammar.alphabet
+        )
         print_grammar(self.grammar.rules)
 
-        for key, value in eliminated_E.items():
+        for value in eliminated_e.values():
             for string in value:
                 if len(string) > 1:
                     for term in self.grammar.alphabet:
                         self.assertNotIn(term, string, ERRMSG_NON_ISO)
-        print("Successfully eliminated all occurrences of non-isolated terminal symbols.")
+        print("Successfully eliminated_ all occurrences of non-isolated terminal symbols.")
 
     def test_elim_long_right(self):
-        self.grammar.rules = cnf.non_iso_term_elim(self.grammar.rules, self.grammar.variables, self.grammar.alphabet)
+        """unit test of elimination of long right sides"""
+        self.grammar.rules = cnf.non_iso_term_elim(
+            self.grammar.rules, self.grammar.variables, self.grammar.alphabet
+        )
         print_grammar(self.grammar.rules)
-        shorted_E = cnf.long_right_elim(self.grammar.rules)
-        print_grammar(shorted_E)
-        for key, value in shorted_E.items():
+        shorted_e = cnf.long_right_elim(self.grammar.rules)
+        print_grammar(shorted_e)
+        for value in shorted_e.values():
             for val in value:
                 self.assertIsNot(len(val), 3 or 4 or 5, ERRMSG_LONG_RIGHT)
-        print("successfully eliminated long right sides for TEST_E: ")
+        print("successfully eliminated_ long right sides for TEST_E: ")
 
 
 def print_grammar(rules):
+    """pretty print grammar"""
     for key, value in rules.items():
         print(key, " --> ", value)
     print("\n")

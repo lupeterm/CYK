@@ -1,27 +1,30 @@
+"""CYK algorithm"""
 def check_rule(rules, rhs):
-    # gets keys for given right hand side
+    """gets keys for given right hand side"""
     symbols = [key for key, value in rules.items() if rhs in value]  # or rhs[::1] in value
     return symbols
 
 
 def matrixmult(rules, lhs, rhs):
-    nonTs = []
-    for ntl in lhs:
-        for ntr in rhs:
-            nonTs.append(check_rule(rules, ntl + ntr))
-    t = [x for inner in nonTs for x in inner]
-    return t
+    """insert correct symbols for combination of lhs and rhs"""
+    non_terminals = []
+    for non_terminals_left in lhs:
+        for non_terminals_right in rhs:
+            non_terminals.append(check_rule(rules, non_terminals_left + non_terminals_right))
+    nonterminals_flatted = [x for inner in non_terminals for x in inner]
+    return nonterminals_flatted
 
 
 def cyk(grammar, word):
+    """CYK algorithm as seen in the lecture slides(pretty much)"""
     tableau = []
-    n = len(word)
-    for i in range(0, n):
-        tableau.append([""] * n)
+    word_length = len(word)
+    for i in range(0, word_length):
+        tableau.append([""] * word_length)
         tableau[i][i] = [x for x in check_rule(grammar.rules, word[i])]
 
-    for s in range(1, n):
-        for i in range(1, n - s + 1):
+    for s in range(1, word_length):
+        for i in range(1, word_length - s + 1):
             result = []
             for k in range(i, i + s):
                 horizontal = tableau[i - 1][k - 1]
