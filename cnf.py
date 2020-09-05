@@ -2,6 +2,7 @@
 import string
 import cnf_test
 import cyk
+import cnf_alternative
 
 
 def cnf(grammar):
@@ -12,10 +13,14 @@ def cnf(grammar):
     grammar.rules = chain_elim(grammar.rules)
     print("Occurrences of chained rules eliminated.")
     cnf_test.print_grammar(grammar.rules)
-    grammar.rules = non_iso_term_elim(grammar.rules, grammar.variables, grammar.alphabet)
+    grammar_alternative = non_iso_term_elim(grammar.rules, grammar.variables, grammar.alphabet)
     print("Occurrences of non isolated terminal symbols eliminated.")
-    cnf_test.print_grammar(grammar.rules)
-    grammar.rules = long_right_elim(grammar.rules)
+    cnf_test.print_grammar(grammar_alternative[0])
+    if grammar_alternative[1]:
+        grammar_alternative = cnf_alternative.long_right_alternative(grammar_alternative[0])
+        print("Occurrences of long right sides eliminated.")
+        return grammar_alternative
+    grammar.rules = long_right_elim(grammar_alternative[0], grammar.alphabet)
     print("Occurrences of long right sides eliminated.")
     cnf_test.print_grammar(grammar.rules)
     return grammar.rules
@@ -28,14 +33,14 @@ def epsilon_elim(start, rules):
     if not eps_keys:
         return rules
     for key, value in rules.items():
-        tmpkey = set()
-        tmprule = set()
+        tmp_key = set()
+        tmp_rule = set()
         for val in value:
-            # get keys to remove from tmpkey
-            tmpkey.update(char for char in eps_keys if char in val)
-            tmprule.update(val.replace(char, "") for char in tmpkey for val in value if
-                           char in val)  # create rules by removing characters
-        value.update(tmprule)
+            # get keys to remove from tmp_key
+            tmp_key.update(char for char in eps_keys if char in val)
+            tmp_rule.update(val.replace(char, "") for char in tmp_key for val in value if
+                            char in val)  # create rules by removing characters
+        value.update(tmp_rule)
     for key, values in rules.items():  # replace empty sets with epsilon
         tmpval = values.copy()
         for word in values:
@@ -72,12 +77,14 @@ def non_iso_term_elim(rules, variables, alphabet):
     """eliminate non isolated terminal symbols"""
     alph = set(string.ascii_uppercase) - set(variables)
     new_dict = dict()
+    if len(alphabet) > len(alph):
+        return cnf_alternative.non_iso_term_elim_alternative(rules, variables, alphabet)
     map_term_not_term = [(char, symbol) for char, symbol
                          in zip(alphabet, alph)]
     for keys, values in rules.items():
         new_dict[keys] = set()
-        tmpval = values.copy()  # save temporary copy of values
-        for val in tmpval:  # iterate over set of strings
+        tmp_val = values.copy()  # save temporary copy of values
+        for val in tmp_val:  # iterate over set of strings
             tmp_str = val
             # substitute new variable with every occurrence of terminal symbol..
             for term in map_term_not_term:
@@ -85,10 +92,10 @@ def non_iso_term_elim(rules, variables, alphabet):
                 if term[0] in tmp_str and len(tmp_str) > 1:
                     tmp_str = tmp_str.replace(term[0], term[1])
                     new_dict[term[1]] = set(term[0])
-            tmpval.remove(val)
-            tmpval.add(tmp_str)
+            tmp_val.remove(val)
+            tmp_val.add(tmp_str)
 
-        new_dict[keys].update(tmpval)
+        new_dict[keys].update(tmp_val)
     for value in new_dict.values():  # make sure it worked, reiterate if needed
         for strings in value:
             if len(strings) > 1:
@@ -97,19 +104,20 @@ def non_iso_term_elim(rules, variables, alphabet):
                         non_iso_term_elim(new_dict,
                                           (key for key, values in new_dict.items()),
                                           alphabet)
-    return new_dict
+    return new_dict, False
 
 
-def long_right_elim(rules):
+def long_right_elim(rules, alphabet):
     """eliminate long right sides"""
     alph = set(string.ascii_uppercase) - set(key for key in rules)
-    new_dict = {}
+    if len(alphabet) > len(alph):
+        return cnf_alternative.long_right_alternative(rules)
+    new_dict = dict()
     for key, values in rules.items():
         tmp_val = values.copy()
         new_dict[key] = tmp_val
         for strings in values:
-            length = len(strings)
-            if length > 2:
+            if len(strings) > 2:
                 tmp_str = strings
                 new_val = tmp_str[-2:]  # ABC -> A BC (split last two vars)
                 new_key = alph.pop()  # new variable X
@@ -119,10 +127,10 @@ def long_right_elim(rules):
                 new_dict[new_key] = set()
                 new_dict[new_key].add(new_val)  # new rule: X -> BC
     repeat = False
-    for key, values in rules.items():  # not pretty i know. if needed, reiterate
+    for key, values in new_dict.items():  # not pretty i know. if needed, reiterate
         for strings in values:
             if len(strings) > 2:
                 repeat = True
     if repeat:
-        return long_right_elim(new_dict)
+        return long_right_elim(new_dict, alphabet)
     return new_dict

@@ -1,6 +1,9 @@
 """module for unit testing"""
+import random
+import string
 import unittest
 import cnf
+import cnf_alternative
 import eingabe
 import cyk
 
@@ -12,6 +15,7 @@ ERRMSG_CHAIN = "something went wrong: unexpected single non-terminal symbol."
 
 class TestCasesA(unittest.TestCase):
     """Unittests for cnf.py"""
+
     def setUp(self) -> None:
         self.grammar = eingabe.CFG()
         self.grammar.rules = {
@@ -50,10 +54,10 @@ class TestCasesA(unittest.TestCase):
         )
 
         for value in self.grammar.rules.values():
-            for string in value:
-                if len(string) > 1:
+            for strings in value:
+                if len(strings) > 1:
                     for term in self.grammar.alphabet:
-                        self.assertNotIn(term, string, ERRMSG_NON_ISO)
+                        self.assertNotIn(term, strings, ERRMSG_NON_ISO)
         print("Successfully eliminated_ all occurrences of non-isolated terminal symbols.")
 
     def test_elim_long_right(self):
@@ -111,15 +115,15 @@ class TestCasesB(unittest.TestCase):
         print_grammar(self.grammar.rules)
 
         for value in eliminated_b.values():
-            for string in value:
-                if len(string) > 1:
+            for strings in value:
+                if len(strings) > 1:
                     for term in self.grammar.alphabet:
-                        self.assertNotIn(term, string, ERRMSG_NON_ISO)
+                        self.assertNotIn(term, strings, ERRMSG_NON_ISO)
         print("Successfully eliminated_ all occurrences of non-isolated terminal symbols.")
 
     def test_elim_long_right(self):
         """unit test of elimination of long right sides"""
-        shorted_b = cnf.long_right_elim(self.grammar.rules)
+        shorted_b = cnf.long_right_elim(self.grammar.rules,self.grammar.alphabet)
         for value in shorted_b.values():
             for val in value:
                 self.assertIsNot(len(val), 3 or 4 or 5, ERRMSG_LONG_RIGHT)
@@ -170,15 +174,15 @@ class TestCasesC(unittest.TestCase):
         print_grammar(self.grammar.rules)
 
         for value in eliminated_c.values():
-            for string in value:
-                if len(string) > 1:
+            for strings in value:
+                if len(strings) > 1:
                     for term in self.grammar.alphabet:
-                        self.assertNotIn(term, string, ERRMSG_NON_ISO)
+                        self.assertNotIn(term, strings, ERRMSG_NON_ISO)
         print("Successfully eliminated_ all occurrences of non-isolated terminal symbols.")
 
     def test_elim_long_right(self):
         """unit test of elimination of long right sides"""
-        shorted_c = cnf.long_right_elim(self.grammar.rules)
+        shorted_c = cnf.long_right_elim(self.grammar.rules, self.grammar.alphabet)
         for value in shorted_c.values():
             for val in value:
                 self.assertIsNot(len(val), 3 or 4 or 5, ERRMSG_LONG_RIGHT)
@@ -187,7 +191,6 @@ class TestCasesC(unittest.TestCase):
 
 
 class TestCasesD(unittest.TestCase):
-
     """Unittests for cnf.py"""
 
     def setUp(self):
@@ -231,10 +234,10 @@ class TestCasesD(unittest.TestCase):
         print_grammar(self.grammar.rules)
 
         for value in eliminated_d.values():
-            for string in value:
-                if len(string) > 1:
+            for strings in value:
+                if len(strings) > 1:
                     for term in self.grammar.alphabet:
-                        self.assertNotIn(term, string, ERRMSG_NON_ISO)
+                        self.assertNotIn(term, strings, ERRMSG_NON_ISO)
         print("Successfully eliminated_ all occurrences of non-isolated terminal symbols.")
 
     def test_elim_long_right(self):
@@ -247,7 +250,7 @@ class TestCasesD(unittest.TestCase):
             self.grammar.rules, self.grammar.variables, self.grammar.alphabet
         )
         print_grammar(self.grammar.rules)
-        shorted_d = cnf.long_right_elim(self.grammar.rules)
+        shorted_d = cnf.long_right_elim(self.grammar.rules, self.grammar.alphabet)
         for value in shorted_d.values():
             for val in value:
                 self.assertIsNot(len(val), 3 or 4 or 5, ERRMSG_LONG_RIGHT)
@@ -259,7 +262,6 @@ class TestCasesE(unittest.TestCase):
     """Unittests for cnf.py"""
 
     def setUp(self):
-        self.grammar = eingabe.CFG()
         self.grammar = eingabe.CFG()
         self.grammar.rules = {
             'S': {'aaA'},
@@ -300,10 +302,10 @@ class TestCasesE(unittest.TestCase):
         print_grammar(self.grammar.rules)
 
         for value in eliminated_e.values():
-            for string in value:
-                if len(string) > 1:
+            for strings in value:
+                if len(strings) > 1:
                     for term in self.grammar.alphabet:
-                        self.assertNotIn(term, string, ERRMSG_NON_ISO)
+                        self.assertNotIn(term, strings, ERRMSG_NON_ISO)
         print("Successfully eliminated_ all occurrences of non-isolated terminal symbols.")
 
     def test_elim_long_right(self):
@@ -312,12 +314,146 @@ class TestCasesE(unittest.TestCase):
             self.grammar.rules, self.grammar.variables, self.grammar.alphabet
         )
         print_grammar(self.grammar.rules)
-        shorted_e = cnf.long_right_elim(self.grammar.rules)
+        shorted_e = cnf.long_right_elim(self.grammar.rules, self.grammar.alphabet)
         print_grammar(shorted_e)
         for value in shorted_e.values():
             for val in value:
                 self.assertIsNot(len(val), 3 or 4 or 5, ERRMSG_LONG_RIGHT)
         print("successfully eliminated_ long right sides for TEST_E: ")
+
+
+class TestCasesAlternative(unittest.TestCase):
+    """unittests for cnf_alternative.py"""
+
+    def setUp(self):
+        self.grammar = eingabe.CFG()
+        self.grammar.rules = {
+            "A": {"aBcD", "a"},
+            "B": {"aBcD", "a"},
+            "C": {"aBcD", "a"},
+            "D": {"aBcD", "a"},
+            "E": {"aBcD", "a"},
+            "F": {"aBcD", "a"},
+            "G": {"aBcD", "a"},
+            "H": {"aBcD", "a"},
+            "I": {"aBcD", "a"},
+            "J": {"aBcD", "a"},
+            "K": {"aBcD", "a"},
+            "L": {"aBcD", "a"},
+            "M": {"aBcD", "a"},
+            "N": {"aBcD", "a"},
+            "O": {"aBcD", "a"},
+            "P": {"aBcD", "a"},
+            "Q": {"aBcD", "a"},
+            "R": {"aBcD", "a"},
+            "S": {"aBcD", "a"},
+            "T": {"aBcD", "a"},
+            "U": {"aBcD", "a"},
+            "V": {"aBcD", "a"},
+            "W": {"aBcD", "a"},
+            "X": {"aBcD", "a"},
+            "Y": {"aBcD", "a"},
+            "Z": {"aBcD", "a"}
+        }
+        self.grammar.alphabet = {'a', 'c'}
+        self.grammar.variables = set(key for key in self.grammar.rules)
+        self.grammar.start = 'S'
+        print("grammar:")
+        print_grammar(self.grammar.rules)
+
+    def test_non_iso_alternative(self):
+        """test for alternative non isolated terminal symbols"""
+        eliminated_e = cnf_alternative.non_iso_term_elim_alternative(
+            self.grammar.rules, self.grammar.variables, self.grammar.alphabet
+        )
+        print_grammar(eliminated_e[0])
+
+        for value in eliminated_e[0].values():
+            for strings in value:
+                if len(strings) > 1:
+                    for term in self.grammar.alphabet:
+                        self.assertNotIn(term, strings, ERRMSG_NON_ISO)
+        print("Successfully eliminated_ all occurrences of non-isolated terminal symbols.")
+
+    def test_long_right_alternative(self):
+        """unittest for alternative long right sides elimination"""
+        self.grammar.rules = cnf_alternative.non_iso_term_elim_alternative(self.grammar.rules,
+                                                                           self.grammar.variables,
+                                                                           self.grammar.alphabet)[0]
+
+        print_grammar(self.grammar.rules)
+        shorted_e = cnf_alternative.long_right_alternative(self.grammar.rules)
+        for value in shorted_e.values():
+            for val in value:
+                amount_integers = len([key for key in shorted_e if len(key) > 1])
+                accepted_length = amount_integers + 2
+                self.assertLessEqual(len(val), accepted_length, ERRMSG_LONG_RIGHT)
+        print_grammar(shorted_e)
+        print("successfully eliminated_ long right sides for TEST_E: ")
+
+
+class TestRandom(unittest.TestCase):
+    """class to a random generated CFG"""
+    def setUp(self):
+        self.grammar = eingabe.CFG()
+        self.grammar.rules, self.grammar.alphabet = random_grammar(8, 3)
+        self.grammar.variables = []
+        for key in self.grammar.rules:
+            self.grammar.variables.append(key)
+        self.grammar.start = list(self.grammar.variables)[0]
+        print("grammar:")
+        print_grammar(self.grammar.rules)
+
+    def test_all(self):
+        """test for full functionality"""
+        print("amount of keys [input]: ", len(self.grammar.variables))
+        grammar = cnf.cnf(self.grammar)
+        for key, val in grammar.items():
+            if key is not self.grammar.start:
+                self.assertNotIn(r'\E', val, ERRMSG_ELIM)
+        print("eliminated all occurrences of epsilon:")
+        print_grammar(grammar)
+        for values in grammar.values():
+            for val in values:
+                self.assertFalse(val.isupper() and len(val) == 1, ERRMSG_CHAIN)
+        print("eliminated all occurrences of chained rules:")
+        print_grammar(grammar)
+        for value in grammar.values():
+            for strings in value:
+                if len(strings) > 1:
+                    for term in self.grammar.alphabet:
+                        self.assertNotIn(term, strings, ERRMSG_NON_ISO)
+        print("Successfully eliminated all occurrences of non-isolated terminal symbols.")
+        print_grammar(grammar)
+        for value in grammar.values():
+            for val in value:
+                amount_integers = len([key for key in grammar if len(key) > 1])
+                accepted_length = amount_integers + 2
+                self.assertLessEqual(len(val), accepted_length, ERRMSG_LONG_RIGHT)
+        print("successfully eliminated long right sides.")
+        print("amount of keys [output]: ", len(grammar.keys()))
+        print_grammar(grammar)
+
+
+def random_grammar(amount_keys, max_values):
+    """generate random grammar"""
+    grammar = dict()
+    uppercases = list(string.ascii_uppercase)
+    lowercases = list(string.ascii_lowercase)
+    random_keys = set(random.sample(uppercases, amount_keys))
+    for key in random_keys:
+        val = set()
+        for _ in range(random.randint(1, max_values)):
+            val.add(''.join(random.sample(random.sample(uppercases + lowercases,
+                                                        random.randint(5, 7)), 5)))
+        grammar.update({key: val})
+    terminals = set()
+    for values in grammar.values():
+        for strings in values:
+            for chars in strings:
+                if chars in lowercases:
+                    terminals.add(chars)
+    return grammar, terminals
 
 
 def print_grammar(rules):
