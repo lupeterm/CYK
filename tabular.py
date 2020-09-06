@@ -3,10 +3,10 @@ from string import Template
 import tabulate
 
 
-def to_latex(table, length_word, start):
+def to_latex(table, word, start):
     """still formatting"""
-    v_indices = (str(x + 1) for x in range(length_word))
-    h_indices = (str(x + 1) for x in range(length_word))
+    v_indices = [str(x + 1)for x in range(len(word))]
+    h_indices = [word[x - 1] for x in range(1, len(word)+1)]
     template = r'\documentclass[10pt]{article}\n ' \
                r'\usepackage{threeparttable}\n ' \
                r'\usepackage[a4paper, left=0cm, right=0cm, top=2cm]{geometry}\n ' \
@@ -21,8 +21,8 @@ def to_latex(table, length_word, start):
     latex_string = latex_string.replace("  1 & ", r"\hline \n  1 & ", 1)
     latex_string = latex_string.replace("[]", r"$\emptyset$")
     latex_string = Template(template).safe_substitute(table=latex_string)
-    latex_string = latex_string.replace(r'\begin{tabular}'r'{r' + "l" * length_word,
-                                        r"\begin{tabular}{|r" + "|c" * length_word + "|")
+    latex_string = latex_string.replace(r'\begin{tabular}'r'{r' + ("l" * len(word)),
+                                        r"\begin{tabular}{|r" + "|c" * len(word) + "|")
     latex_string = latex_string.replace("['", r"\{")
     latex_string = latex_string.replace("']", r"\}")
     latex_string = latex_string.replace("', '", ", ")
