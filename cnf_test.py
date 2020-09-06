@@ -6,6 +6,7 @@ import cnf
 import cnf_alternative
 import eingabe
 import cyk
+import tabular
 
 ERRMSG_ELIM = r'something went wrong: unexpected occurrence of \E.'
 ERRMSG_NON_ISO = "something went wrong: unexpected occurrence of terminal symbol."
@@ -19,12 +20,11 @@ class TestCasesA(unittest.TestCase):
     def setUp(self) -> None:
         self.grammar = eingabe.CFG()
         self.grammar.rules = {
-            'S': {'aACa'},
-            'A': {'B', 'a'},
-            'B': {'C', 'c'},
-            'C': {'cC', r'\E'}
+            'S': {'ASA', 'aB'},
+            'A': {'B', 'S'},
+            'B': {'b', r'\E'}
         }
-        self.grammar.alphabet = {'a', 'b', 'c'}
+        self.grammar.alphabet = {'a', 'b'}
         self.grammar.variables = set(key for key in self.grammar.rules)
         self.grammar.start = 'S'
         print_grammar(self.grammar.rules)
@@ -52,12 +52,12 @@ class TestCasesA(unittest.TestCase):
         self.grammar.rules = cnf.non_iso_term_elim(
             self.grammar.rules, self.grammar.variables, self.grammar.alphabet
         )
-
-        for value in self.grammar.rules.values():
-            for strings in value:
-                if len(strings) > 1:
-                    for term in self.grammar.alphabet:
-                        self.assertNotIn(term, strings, ERRMSG_NON_ISO)
+        if type(self.grammar.rules) is tuple:
+            for value in self.grammar.rules[0].values():
+                for strings in value:
+                    if len(strings) > 1:
+                        for term in self.grammar.alphabet:
+                            self.assertNotIn(term, strings, ERRMSG_NON_ISO)
         print("Successfully eliminated_ all occurrences of non-isolated terminal symbols.")
 
     def test_elim_long_right(self):
@@ -123,7 +123,7 @@ class TestCasesB(unittest.TestCase):
 
     def test_elim_long_right(self):
         """unit test of elimination of long right sides"""
-        shorted_b = cnf.long_right_elim(self.grammar.rules,self.grammar.alphabet)
+        shorted_b = cnf.cnf(self.grammar)
         for value in shorted_b.values():
             for val in value:
                 self.assertIsNot(len(val), 3 or 4 or 5, ERRMSG_LONG_RIGHT)
@@ -407,32 +407,39 @@ class TestRandom(unittest.TestCase):
     def test_all(self):
         """test for full functionality"""
         print("amount of keys [input]: ", len(self.grammar.variables))
-        grammar = cnf.cnf(self.grammar)
-        for key, val in grammar.items():
+        self.grammar.rules = cnf.cnf(self.grammar)
+        for key, val in self.grammar.rules.items():
             if key is not self.grammar.start:
                 self.assertNotIn(r'\E', val, ERRMSG_ELIM)
         print("eliminated all occurrences of epsilon:")
-        print_grammar(grammar)
-        for values in grammar.values():
+        print_grammar(self.grammar.rules)
+        for values in self.grammar.rules.values():
             for val in values:
                 self.assertFalse(val.isupper() and len(val) == 1, ERRMSG_CHAIN)
         print("eliminated all occurrences of chained rules:")
-        print_grammar(grammar)
-        for value in grammar.values():
+        print_grammar(self.grammar.rules)
+        for value in self.grammar.rules.values():
             for strings in value:
                 if len(strings) > 1:
                     for term in self.grammar.alphabet:
                         self.assertNotIn(term, strings, ERRMSG_NON_ISO)
         print("Successfully eliminated all occurrences of non-isolated terminal symbols.")
-        print_grammar(grammar)
-        for value in grammar.values():
+        print_grammar(self.grammar.rules)
+        for value in self.grammar.rules.values():
             for val in value:
-                amount_integers = len([key for key in grammar if len(key) > 1])
+                amount_integers = len([key for key in self.grammar.rules if len(key) > 1])
                 accepted_length = amount_integers + 2
                 self.assertLessEqual(len(val), accepted_length, ERRMSG_LONG_RIGHT)
         print("successfully eliminated long right sides.")
-        print("amount of keys [output]: ", len(grammar.keys()))
-        print_grammar(grammar)
+        print("amount of keys [output]: ", len(self.grammar.rules.keys()))
+        print_grammar(self.grammar.rules)
+        word = eingabe.new_word()
+        table = cyk.cyk(self.grammar, word)
+        tableau = tabular.to_latex(table, len(word), self.grammar.start)
+        file = open(file="CYK_Tableau.tex", mode="w")
+        file.write(tableau)
+        print("\nwritten in CYK_Tableau.tex")
+
 
 
 def random_grammar(amount_keys, max_values):
