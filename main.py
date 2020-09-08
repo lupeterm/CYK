@@ -22,7 +22,7 @@ grammar.rules = cnf.cnf(grammar)  # bring CFG in Chomsky NF
 print("cnf done")
 cnf_test.print_grammar(grammar.rules)
 table = cyk.cyk(grammar, word)  # run CYK algorithm
-tableau = tabular.to_latex(table, len(word), grammar.start)
+tableau = tabular.to_latex(table, word, grammar.start)
 file = open(file="CYK_Tableau.tex", mode="w")
 file.write(tableau)
 print("\nwritten in CYK_Tableau.tex")

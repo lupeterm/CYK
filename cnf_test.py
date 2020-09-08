@@ -52,7 +52,7 @@ class TestCasesA(unittest.TestCase):
         self.grammar.rules = cnf.non_iso_term_elim(
             self.grammar.rules, self.grammar.variables, self.grammar.alphabet
         )
-        if type(self.grammar.rules) is tuple:
+        if isinstance(self.grammar.rules, tuple):
             for value in self.grammar.rules[0].values():
                 for strings in value:
                     if len(strings) > 1:

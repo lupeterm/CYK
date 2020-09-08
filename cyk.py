@@ -9,7 +9,6 @@ def check_rule(rules, rhs):
 
 def matrixmult(rules, lhs, rhs):
     """insert correct symbols for combination of lhs and rhs"""
-    # TODO : testing -> cnf_test
     non_terminals = []
     non_terminals_left = list()
     non_terminals_right = list()
@@ -34,7 +33,6 @@ def matrixmult(rules, lhs, rhs):
     nonterminals_flatted = [x for inner in non_terminals for x in inner]
     return nonterminals_flatted
 
-# TODO : debug cyk function
 
 def cyk(grammar, word):
     """CYK algorithm as seen in the lecture slides(pretty much)"""
