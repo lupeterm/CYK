@@ -1,13 +1,13 @@
 
-Context-Free Grammar Evaluator
+Context-Free Grammar Interpreter
 ===
-This package takes a CF grammar G and a word w as an input, transforms G into Chomsky NF and performs the Cocke-Younger-Kasami-algorithm (CYK) to avaluate wether the word can be created by the grammar or not.
+This package takes a CF grammar G and a word w as an input, transforms G into Chomsky normal form and performs the Cocke-Younger-Kasami-algorithm (CYK) to evaluate wether the word can be created by the grammar or not.
 ## Table of Contents
 
-* **User Manual**
+* **Usage**
 * **Example**
 
-## User Manual
+## Usage
 
 1. **Execute Program** 
     → Compile from command line using `python3 main.py` or execute `main.py` using your favourite IDE or text editor.
@@ -26,8 +26,9 @@ This package takes a CF grammar G and a word w as an input, transforms G into Ch
 3. **Enter Word**
     → Enter the word, nothing fancy to it.
 
-4. **Open PDF File**
-    → Open the PDF file to see the table resulting from the CYK algorithm and wether the word can be created or not.
+4. **Open .tex file or convert to PDf**
+    → Open the .tex file directly or convert it to PDF. I used [Overleaf](https://www.overleaf.com) for both. 
+    
 
 Example
 ---
