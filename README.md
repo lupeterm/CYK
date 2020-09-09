@@ -10,9 +10,11 @@ This package takes a CF grammar G and a word w as an input, transforms G into Ch
 ## Usage
 
 1. **Execute Program** 
+
     → Compile from command line using `python3 main.py` or execute `main.py` using your favourite IDE or text editor.
 
 2. **Enter Grammar**
+
     → Enter the members of the grammar in order with following syntax:
     | Member  | Syntax/Input  |Output| 
     |---|---|---|
@@ -24,9 +26,11 @@ This package takes a CF grammar G and a word w as an input, transforms G into Ch
     Notice that the notation for epsilon is \E. 
     Also note that the LaTeX table will go out of bound for long words. 
 3. **Enter Word**
+
     → Enter the word, nothing fancy to it.
 
-4. **Open .tex file or convert to PDf**
+4. **Open .tex file or convert to PDF**
+
     → Open the .tex file directly or convert it to PDF. I used [Overleaf](https://www.overleaf.com) for both. 
     
 
