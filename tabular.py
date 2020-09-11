@@ -11,7 +11,7 @@ def to_latex(table, word, start):
     h_indices = [word[x - 1] for x in range(1, len(word)+1)]
 
     # import the template
-    template = ''.join(open("latex_template.txt.txt", "r").read().splitlines())
+    template = ''.join(open("latex_template.txt", "r").read().splitlines())
     latex_string = str(tabulate.tabulate(table,
                                          tablefmt="latex",
                                          showindex=iter(v_indices),
