@@ -1,0 +1,9 @@
+\documentclass[10pt]{article}
+\usepackage{threeparttable}
+\usepackage[a4paper, left=0cm, right=0cm, top=2cm]{geometry}
+\begin{document}
+$table
+\begin{tablenotes}
+\item[1] $word
+\end{tablenotes}
+\end{document}%

@@ -12,7 +12,6 @@ def matrixmult(rules, lhs, rhs):
     non_terminals = []
     non_terminals_left = list()
     non_terminals_right = list()
-    print(lhs, rhs)
     if len(lhs) > 2 and lhs[1].isnumeric():
         non_terminals_left.append(lhs[:2])
         non_terminals_left.append(lhs[2:])
