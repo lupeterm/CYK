@@ -24,7 +24,6 @@ def matrixmult(rules, lhs, rhs):
         non_terminals_right = rhs
 
     # AA A1B AB1 A1B1
-    print(non_terminals_right)
 
     for nterms_left in non_terminals_left:
         for nterms_right in non_terminals_right:

@@ -503,7 +503,7 @@ class TestCasesAlternative(unittest.TestCase):
 def print_grammar(rules):
     """pretty print grammar"""
     for key, value in rules.items():
-        print(key, " --> ", value)
+        print(f'{key} --> {value}')
     print("\n")
 
 
