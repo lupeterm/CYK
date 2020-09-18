@@ -3,7 +3,7 @@ from string import Template
 import tabulate
 
 
-def to_latex(table, word, start):
+def to_latex(table, word, start, rules):
     """still formatting"""
 
     # custom indices for table
@@ -19,10 +19,10 @@ def to_latex(table, word, start):
 
     # conclusion and insertion of cyk table
     if table[0][-1]:
-        is_in = r'$w \in L$' if start in table[0][-1][0] else r'$w \notin L$'
+        is_in = '$$w \\in L \n' if start in table[0][-1][0] else '$$w \\notin L \n'
     else:
-        is_in = r'$w \notin L$'
-    latex_string = Template(template).safe_substitute(table=latex_string, word=is_in)
+        is_in = '$$w \\notin L \n'
+    latex_string = Template(template).safe_substitute(table=latex_string, word=is_in,)
 
     # center columns
     latex_string = latex_string.replace(r'\begin{tabular}'r'{r' + ("l" * len(word)),
@@ -34,5 +34,14 @@ def to_latex(table, word, start):
     latex_string = latex_string.replace("', '", ", ")
     latex_string = latex_string.replace("1 & ", "\\hline\n 1 & ", 1)
     latex_string = latex_string.replace("[]", r'$\emptyset$')
-
+    latex_string = Template(latex_string).safe_substitute(array=grammar_to_latex(rules))
     return latex_string
+
+
+def grammar_to_latex(rules):
+    table_string = ''
+    for key, values in rules.items():
+        table_string = table_string + f'{key} & \\rightarrow & \\{values} & \n'
+    table_string = table_string.replace("'", "")
+    table_string = table_string.replace('}', '\\}')
+    return table_string
