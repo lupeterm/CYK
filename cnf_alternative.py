@@ -14,29 +14,25 @@ def non_iso_term_elim_alternative(rules, variables, alphabet):
             alph.add(symbol + str(diff))
     map_term_not_term = [(char, symbol) for char, symbol
                          in zip(alphabet, alph)]
-    for keys, values in rules.items():
+    for keys, set_of_strings in rules.items():
         new_dict[keys] = set()
-        tmp_val = values.copy()
-        for val in tmp_val:
-            tmp_str = val
+        set_copy = set_of_strings.copy()
+        for strings in set_copy:
+            string_copy = strings
             for term_symbol in map_term_not_term:
-                if term_symbol[0] in tmp_str and len(tmp_str) > 1:
-                    tmp_str = tmp_str.replace(term_symbol[0], term_symbol[1])
+                if term_symbol[0] in string_copy and len(string_copy) > 1:
+                    string_copy = string_copy.replace(term_symbol[0], term_symbol[1])
                     new_dict[term_symbol[1]] = set(term_symbol[0])
-            tmp_val.remove(val)
-            tmp_val.add(tmp_str)
+            set_copy.remove(strings)
+            set_copy.add(string_copy)
 
-        new_dict[keys].update(tmp_val)
+        new_dict[keys].update(set_copy)
     repeat = False
-    for value in new_dict.values():  # make sure it worked, reiterate if needed
-        for strings in value:
-            if len(strings) > 1:
-                for term in alphabet:
-                    if term in strings:
-                        repeat = True
-    if repeat:
-        return non_iso_term_elim_alternative(new_dict,
-                                             (key for key, values in new_dict.items()),
+    for set_of_strings in new_dict.values():  # make sure it worked, reiterate if needed
+        for strings in set_of_strings:
+            if len(strings) > 1 and (set(strings) & set(alphabet)):
+                        return non_iso_term_elim_alternative(new_dict,
+                                             (key for key in new_dict.keys()),
                                              alphabet)
     return new_dict, True
 
@@ -48,43 +44,41 @@ def long_right_alternative(rules):
     new_dict = dict()
     am_new_keys = 0
     new_key = alph.pop()+str(am_new_keys)
-    for key, values in rules.items():
-        tmp_val = values.copy()
-        new_dict[key] = tmp_val
-        for strings in values:
+    for key, set_of_strings in rules.items():
+        new_dict[key] = set_of_strings.copy()
+        for strings in set_of_strings:
             amount_integers = len([num for num in [char for char in strings]
                                    if num not in string.ascii_uppercase])
             if len(strings) - amount_integers > 2:
-                tmp_str = strings
-                count = 0
+                string_copy = strings
+                length = 0
                 new_val = ""
-                for char in reversed(tmp_str):
-                    if count == 2:
+                for char in reversed(string_copy):
+                    if length == 2:
                         break
                     if char not in string.ascii_uppercase:
                         new_val = char + new_val
                         continue
                     new_val = char + new_val
-                    count += 1
+                    length += 1
                 am_new_keys += 1
                 if am_new_keys > 9:
                     new_key = alph.pop()
                     am_new_keys = 0
                 if len(new_key) > 1:
                     new_key = ''.join(list(new_key)[:-1]) + str(am_new_keys)
-                tmp_str = tmp_str[:-len(new_val)] + new_key
+                string_copy = string_copy[:-len(new_val)] + new_key
                 new_dict[key].remove(strings)
-                new_dict[key].add(tmp_str)
+                new_dict[key].add(string_copy)
                 new_dict[new_key] = set()
                 new_dict[new_key].add(new_val)
-    repeat = False
-    for key, values in new_dict.items():
-        for strings in values:
+    
+    for key, set_of_strings in new_dict.items():
+        for strings in set_of_strings:
             amount_integers = len([num for num in
                                    [char for char in strings]
                                    if num not in string.ascii_uppercase])
             if len(strings) - amount_integers > 2:
-                repeat = True
-    if repeat:
-        return long_right_alternative(new_dict)
+                return long_right_alternative(new_dict)
+
     return new_dict
