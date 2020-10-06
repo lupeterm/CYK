@@ -28,11 +28,12 @@ This package takes a CF grammar G and a word w as an input, transforms G into Ch
 3. **Enter Word**
 
     → Enter the word, nothing fancy to it.
+    → spam `enter` until done.
 
 4. **Open .tex file or convert to PDF**
 
-    → Open the .tex file directly or convert it to PDF. I used [Overleaf](https://www.overleaf.com) for both. 
-    
+    → Open the .tex file using your favourite editor(I used [Overleaf](https://www.overleaf.com).) 
+    → Open the .pdf file using `evince` or adobe ...
 
 Example
 ---
