@@ -71,27 +71,25 @@ class CFG:
         for i in file:
             if i == '':
                 file.remove(i)
-        #
+        #Extract the Terminal Symbols and the Alphabet from the file
         for i in splitter:
             file[0] = file[0].replace(i, ' ')
             file[1] = file[1].replace(i, ' ')
         self.set_variables(file[0].split())
         self.set_alphabet(file[1].split())
-        self.set_start(file[2])
 
+        self.set_start(file[2])
         check_start(self.variables, self.start)
         #delete the first three Elements from the List (Variables, Alphabet and Starting Symbol)
         del file[0:3]
 
         for rules in file:
             terminal = rules[0]
-            del rules[0]
             for i in splitter:
                 rules = rules.replace(i, ' ')
-            rules = rules.slpit()
-            for i in rules:
-                if i == '->':
-                    del rules[i]
+            rules = rules.split()
+            del rules[0]
+            rules.remove('->')
             check_syntax(self.variables, self.alphabet, rules)
             for k in rules:
                 self.set_rules(terminal, k)
