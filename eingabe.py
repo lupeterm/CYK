@@ -1,5 +1,5 @@
 """define input of CFG"""
-splitter = ['.', ';', '  ', ',']
+splitter = ['.', ';', '  ', ',', '|']
 
 
 def new_word():
@@ -63,6 +63,39 @@ class CFG:
 
         self.set_start(input("Please enter the starting Symbol.\n"))
         check_start(self.variables, self.start)
+
+    def file_input(self):
+        
+        file = open(input("Enter filename you want to import.\n"), "r").read().splitlines()
+        #Remove Empty Lines from the list
+        for i in file:
+            if i == '':
+                file.remove(i)
+        #
+        for i in splitter:
+            file[0] = file[0].replace(i, ' ')
+            file[1] = file[1].replace(i, ' ')
+        self.set_variables(file[0].split())
+        self.set_alphabet(file[1].split())
+        self.set_start(file[2])
+
+        check_start(self.variables, self.start)
+        #delete the first three Elements from the List (Variables, Alphabet and Starting Symbol)
+        del file[0:3]
+
+        for rules in file:
+            terminal = rules[0]
+            del rules[0]
+            for i in splitter:
+                rules = rules.replace(i, ' ')
+            rules = rules.slpit()
+            for i in rules:
+                if i == '->':
+                    del rules[i]
+            check_syntax(self.variables, self.alphabet, rules)
+            for k in rules:
+                self.set_rules(terminal, k)
+
 
 
 def check_syntax(variables, alphabet, rules):
