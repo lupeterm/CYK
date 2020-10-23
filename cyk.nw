@@ -9,7 +9,21 @@ grammar and the word is the transformation of the grammar into CNF. After that t
 executed and the result will be put into a latex file.
 
 \section{Usage}
-To use the program either run \textsf main.py with an IDE of your choosing or via the command line withe the command \texstsf python3 main.py.
+To use the program either run main.py with an IDE or a text editor of your choosing or via the command line 
+with the command python3 main.py.Then enter the grammar members with the following syntax:
+\newline
+\newline Symbols are represented by upper case letters and they are divided by commas. For the output the 
+symbols will be framed by curly brackets. 
+\newline E.g.: In: 'A,B,C' Out: '\{A,B,C\}'
+\newline	Terminal Symbols are represented by lower case letters and are put in and out the same way as symbols.
+\newline E.g.: In: 'a,b,c' Out: '\{a,b,c\}'
+\newline	For each Symbol (e.g. A) there will be rules required. Those are also divided by commas. 
+\newline E.g.: If A can be turned into B, a or epsilon: In: A: 'B, a, \textbackslash E' Out: \{A->B;a;\E\}
+\newline	The starting symbol has to be one of the symbols(upper case). And note that epsilon has to be written as '\textbackslash E'.
+\newline
+\newline Next you will have to enter the word. Be careful to just use the symbols and terminal symbols you 
+used when entering the syntax! After that just press enter time and time again until the program is done.
+Next you can open the .tex file using your favorite editor and
 
 \section{Overview}
 Here is the overview over all included program parts:
