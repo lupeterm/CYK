@@ -6,20 +6,22 @@ import tabular
 import cnf
 import cnf_test
 
-
 def run_pdflatex(file_name='CYK_Tableau.tex', path='.'):
-    """ cnonvert tex file to pdf"""
+    """convert tex file to pdf"""
     return subprocess.call(['pdflatex', file_name], cwd=path)
 
-
 grammar = eingabe.CFG()
-# eingabe.cfg.new_grammar(grammar)
+if input("Do you want to import your Grammar? [Y/n] ") in ['Y', 'y']:
+    eingabe.CFG.file_input(grammar)
+else:
+    eingabe.CFG.new_grammar(grammar)
+
 word = eingabe.new_word()
-cnf_test.print_grammar(grammar.rules)
-grammar.rules = dict(S={'aACa'}, A={'B', 'a'}, B={'C', 'c'}, C={'cC', r'\E'})
-grammar.start = 'S'
-grammar.alphabet = {'a', 'b', 'c'}
-grammar.variables = set(key for key in grammar.rules)
+#cnf_test.print_grammar(grammar.rules)
+#grammar.rules = dict(S={'aACa'}, A={'B', 'a'}, B={'C', 'c'}, C={'cC', r'\E'})
+#grammar.start = 'S'
+#grammar.alphabet = {'a', 'b', 'c'}
+#grammar.variables = set(key for key in grammar.rules)
 grammar.rules = cnf.cnf(grammar)  # bring CFG in Chomsky NF
 print("cnf done")
 cnf_test.print_grammar(grammar.rules)
