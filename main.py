@@ -8,7 +8,7 @@ import cnf_test
 
 def run_pdflatex(file_name='CYK_Tableau.tex', path='.'):
     """convert tex file to pdf"""
-    return subprocess.call(['pdflatex', file_name], cwd=path, shell=true)
+    return subprocess.call(['pdflatex', file_name], cwd=path)
 
 grammar = eingabe.CFG()
 if input("Do you want to import your Grammar? [Y/n] ") in ['Y', 'y']:
