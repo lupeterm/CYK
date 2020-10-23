@@ -15,6 +15,16 @@ cyk.tex
 .idea/**/dictionaries
 .idea/**/shelf
 
+#noweb compilation stuff
+.cyk.nw.swp
+.cyk.tex.swo
+cyk.aux
+cyk.dvi
+cyk.log
+cyk.nw~
+foo.tex
+version.tex
+
 # Generated files
 .idea/**/contentModel.xml
 
