@@ -18,7 +18,7 @@ symbols will be framed by curly brackets.
 \newline	Terminal Symbols are represented by lower case letters and are put in and out the same way as symbols.
 \newline E.g.: In: 'a,b,c' Out: '\{a,b,c\}'
 \newline	For each Symbol (e.g. A) there will be rules required. Those are also divided by commas. 
-\newline E.g.: If A can be turned into B, a or epsilon: In: A: 'B, a, \textbackslash E' Out: \{A->B;a;\E\}
+\newline E.g.: If A can be turned into B, a or epsilon: In: A: 'B, a, \textbackslash E' Out: '\{A $\rightarrow$ B;a;\E\}'
 \newline	The starting symbol has to be one of the symbols(upper case). 
 And note that epsilon has to be written as '\textbackslash E'.
 \newline
@@ -31,13 +31,17 @@ shows the cyk building table and the cnf of the grammar.
 
 In the main program all other important parts of the program are executed.
 
-<<main.py>>=
+<<main>>=
 /*
-	<<eingabe.py>>
-	<<cyk.py>>
-	<<tabular.py>>
-	<<cnf.py>>
-	<<cnf_test.py>>
+	<<eingabe>>
+	<<cyk>>
+	<<tabular>>
+	<<cnf>>
+	<<cnftest>>
+	<<runpdflatex>>
+	<<input>>
+	<<chomskynf>>
+	<<execcyk>>
 */
 
 """run this file"""
@@ -48,22 +52,44 @@ import tabular
 import cnf
 import cnf_test
 
-
+@
+First the needed files are imported. Then a function to call the subprocess for carrying out the converting of the the latex
+ file into a pdf file is defined.
+<<runpdflatex>>=
 def run_pdflatex(file_name='CYK_Tableau.tex', path='.'):
     """ cnonvert tex file to pdf"""
     return subprocess.call(['pdflatex', file_name], cwd=path)
 
-
+@
+Afterwards the input of all necessary information about the grammar and the word in question is carried out. The grammar may
+ be imported so that possibility is given through a yes/no decision.
+<<input>>=
 grammar = eingabe.CFG()			# eingabe.cfg.new_grammar(grammar)
+if input("Do you want to import your Grammar? [Y/n] ") in ['Y', 'y']:
+    eingabe.CFG.file_input(grammar)
+else:
+	 eingabe.CFG.new_grammar(grammar)
 word = eingabe.new_word()
-cnf_test.print_grammar(grammar.rules)
-	grammar.rules = dict(S={'aACa'}, A={'B', 'a'}, B={'C', 'c'}, C={'cC', r'\E'})
-	grammar.start = 'S'
-	grammar.alphabet = {'a', 'b', 'c'}
-	grammar.variables = set(key for key in grammar.rules)
-	grammar.rules = cnf.cnf(grammar)  	# bring CFG in Chomsky NF
+#cnf_test.print_grammar(grammar.rules)
+#grammar.rules = dict(S={'aACa'}, A={'B', 'a'}, B={'C', 'c'}, C={'cC', r'\E'})
+#grammar.start = 'S'
+#grammar.alphabet = {'a', 'b', 'c'}
+#grammar.variables = set(key for key in grammar.rules)
+
+@
+Then the routine for converting the grammar into CNF is called. While converting there will be intermediate outputs. Therefore
+ after the routine is done, there will be a confirming output and the converted grammar will be printed.
+<<chomskynf>>=
+grammar.rules = cnf.cnf(grammar) # bring CFG in Chomsky NF
 print("cnf done")
 cnf_test.print_grammar(grammar.rules)
+
+@
+After all the preparations are done, the CYK algorithm is executed and the result is stored in a table.
+Then a function to convert that table, the grammar and the word in question into a latex text is called.
+The latex file is opened, the text is written into it and it is closed again. Then a success message is printed.
+ Lastly the latex file is turned into a pdf file using the run\_ pdflatex function and again a success message is printed.
+<<execcyk>>=
 table = cyk.cyk(grammar, word)  		# run CYK algorithm
 tableau = tabular.to_latex(table, word, grammar.start, grammar.rules)
 file = open(file="CYK_Tableau.tex", mode="w")
@@ -77,7 +103,7 @@ print('\noutput saved to CYK_Tableau.pdf')
 \section{Input}
 
 
-<<eingabe.py>>=
+<<eingabe>>=
 """define input of CFG"""
 splitter = ['.', ';', '  ', ',', '|']
 
