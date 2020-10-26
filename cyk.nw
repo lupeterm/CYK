@@ -12,8 +12,8 @@ executed and the result will be put into a latex file.
 To use the program the program main.py must be executed via an IDE, editor or the command line using the 
 command 'python3 main.py'.Then the grammar members need to be defined using the following syntax:
 \newline
-\newline Symbols are represented by upper case letters and they are divided by commas. For the output the 
-symbols will be framed by curly brackets. 
+\newline Symbols are represented by upper case letters and they are divided by commas, semicolons, spaces, dots or pipes. 
+For the output the symbols will be framed by curly brackets. 
 \newline E.g.: In: 'A,B,C' Out: '\{A,B,C\}'
 \newline	Terminal Symbols are represented by lower case letters and are put in and out the same way as symbols.
 \newline E.g.: In: 'a,b,c' Out: '\{a,b,c\}'
@@ -30,7 +30,7 @@ shows the cyk building table and the cnf of the grammar.
 \section{Main}
 
 In the main program all other important parts of the program are executed.
-
+\newpage
 <<main>>=
 /*
 	<<eingabe>>
@@ -55,6 +55,7 @@ import cnf_test
 @
 First the needed files are imported. Then a function to call the subprocess for carrying out the converting of the the latex
  file into a pdf file is defined.
+ 
 <<runpdflatex>>=
 def run_pdflatex(file_name='CYK_Tableau.tex', path='.'):
     """ cnonvert tex file to pdf"""
@@ -63,6 +64,7 @@ def run_pdflatex(file_name='CYK_Tableau.tex', path='.'):
 @
 Afterwards the input of all necessary information about the grammar and the word in question is carried out. The grammar may
  be imported so that possibility is given through a yes/no decision.
+ 
 <<input>>=
 grammar = eingabe.CFG()			# eingabe.cfg.new_grammar(grammar)
 if input("Do you want to import your Grammar? [Y/n] ") in ['Y', 'y']:
@@ -71,14 +73,16 @@ else:
 	 eingabe.CFG.new_grammar(grammar)
 word = eingabe.new_word()
 #cnf_test.print_grammar(grammar.rules)
-#grammar.rules = dict(S={'aACa'}, A={'B', 'a'}, B={'C', 'c'}, C={'cC', r'\E'})
+#grammar.rules = dict(S={'aACa'}, A={'B', 'a'}, B={'C', 'c'}, 
+#			C={'cC', r'\E'})
 #grammar.start = 'S'
 #grammar.alphabet = {'a', 'b', 'c'}
 #grammar.variables = set(key for key in grammar.rules)
 
 @
 Then the routine for converting the grammar into CNF is called. While converting there will be intermediate outputs. Therefore
- after the routine is done, there will be a confirming output and the converted grammar will be printed.
+ after the routine is done, there will be a success message and the converted grammar will be printed.
+ 
 <<chomskynf>>=
 grammar.rules = cnf.cnf(grammar) # bring CFG in Chomsky NF
 print("cnf done")
@@ -89,6 +93,7 @@ After all the preparations are done, the CYK algorithm is executed and the resul
 Then a function to convert that table, the grammar and the word in question into a latex text is called.
 The latex file is opened, the text is written into it and it is closed again. Then a success message is printed.
  Lastly the latex file is turned into a pdf file using the run\_ pdflatex function and again a success message is printed.
+ 
 <<execcyk>>=
 table = cyk.cyk(grammar, word)  		# run CYK algorithm
 tableau = tabular.to_latex(table, word, grammar.start, grammar.rules)
@@ -101,13 +106,25 @@ print('\noutput saved to CYK_Tableau.pdf')
 
 @
 \section{Input}
-
+Through the input a context free grammar and a word to be tested of being part of the grammar are entered. 
+First of all a list with splitting symbols is defined in order to be able to differentiate different symbols.
 
 <<eingabe>>=
+/*
+	<<nword>>
+	<<cfg>>
+	<<csvar>>
+	<<csyntax>>
+*/
+
 """define input of CFG"""
 splitter = ['.', ';', '  ', ',', '|']
 
+@
+Next the input of the word in question is realized. In order to test the word later the string from the input is converted 
+into a character list.
 
+<<nword>>=
 def new_word():
     """get word from user"""
     word = input("Please enter the word. \n")
@@ -116,9 +133,22 @@ def new_word():
         char_list.append(i)
     return char_list
 
-
+@
+A context free grammar consists of variables, an alphabet, a set of rules and a start variable. Therefore a class for context
+ free grammars (CFG) is defined.
+ 
+<<cfg>>=
+/*
+	<<initcfg>>
+	<<ngrammar>>
+	<<filein>>
+*/
 class CFG:
     """Definition of context-free Grammar"""
+@
+The members of a context free grammar (variables, the alphabet, the rules and the start variable) are defined as follows:
+ 
+<<initcfg>>=
 
     def __init__(self):
         self.variables = []
@@ -143,6 +173,18 @@ class CFG:
     def set_start(self, start):
         """set starting symbol"""
         self.start = start
+
+@
+Following these definitions the user input via command line is implemented.
+First the user is asked to enter all variables respectively symbols and then all splitting symbols in the string are replaced 
+by space for further use. Afterwards that string is assigned as the variables of the grammar. Then the terminal symbols 
+respectively the alphabet are inquired from the user. After replacing all splitting symbols with space the string is 
+assigned as the alphabet of the grammar. The rules for each variable are then inquired from the user. After replacing the 
+splitting symbols with space again, the function for checking the syntax is called. If the syntax is fine the sets of keys and
+ values are assigned as the rules of the grammar. After that the start variable is inquired from the user and is tested to 
+ be part of the variables.
+
+<<ngrammar>>=
 
     def new_grammar(self):
         """get grammar from user input"""
@@ -169,6 +211,16 @@ class CFG:
 
         self.set_start(input("Please enter the starting Symbol.\n"))
         check_start(self.variables, self.start)
+
+@
+Since there is also the option to enter the grammar via an external file, that file needs to be converted into usable information 
+for the grammar. First the user is asked to enter the filename they want to import. That file is then split into a list of 
+all lines from which the empty lines are removed. The splitting symbols in the first two lines are replaced by spaces. Then 
+the first line is assigned as the variables and the second line as the alphabet. The start variable from the third line is 
+then checked to be part of the variables. Next the first three lines of the file will be deleted so just the rules of the 
+grammar will be left in the file. Then the 
+
+<<filein>>=
 
     def file_input(self):
         
@@ -200,8 +252,12 @@ class CFG:
             for k in rules:
                 self.set_rules(terminal, k)
 
+@
+The syntax of the grammar needs to be checked for the program to work. Therefore the variables from the input are divided 
+into upper and lower case variables. Then for each lower and upper case variable it is checked whether they are part of the 
+alphabet or the variables. If not then an error message will be displayed.
 
-
+<<csyntax>>=
 def check_syntax(variables, alphabet, rules):
     """check input syntax"""
     lower = []
@@ -224,7 +280,10 @@ def check_syntax(variables, alphabet, rules):
             print("Inappropriate symbols have been entered. \n")
             raise SystemExit
 
+@
+The start variable also needs to be checked of being part of the variables. If it is not an error message is shown again.
 
+<<csvar>>=
 def check_start(variables, start):
     """check if starting symbol is in grammar"""
     if start not in variables:
