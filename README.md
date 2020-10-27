@@ -22,6 +22,16 @@ This package takes a CF grammar G and a word w as an input, transforms G into Ch
     | Terminal Symbols | a, b, c...  |{a, b, c}|
     | Rules per Symbol (eg. A:) |  B, a, \E  | {A -> B ; a ; \E,...} |
     |Starting Symbol|A|A|
+   → The grammar may also be entered through an external file with following regulations:
+Empty lines in the file will be ignored by the program.
+    | Order of lines | Grammar member | Rules | Example |
+    |---|---|---|---|
+    | 1 | Symbols | upper case letters | S,A,B |
+    | 2 | Terminal Symbols | lower case letters | a,b |
+    | 3 | Starting Symbol | part of Symbols | S |
+    | 4 to x | Rules per Symbol | first character of the line is the Symbol | S  AB, AA |
+    | 4 to x | Rules per Symbol | '->' may be inserted for better clarity | A -> BA, a |
+    | 4 to x | Rules per Symbol | applying rules are stated after the Symbol | B -> b |
     
     Notice that the notation for epsilon is \E. 
     Also note that the LaTeX table will go out of bound for long words. 
@@ -30,9 +40,8 @@ This package takes a CF grammar G and a word w as an input, transforms G into Ch
     → Enter the word, nothing fancy to it.
     → spam `enter` until done.
 
-4. **Open .tex file or convert to PDF**
+4. **Open PDF**
 
-    → Open the .tex file using your favourite editor(I used [Overleaf](https://www.overleaf.com).) 
     → Open the .pdf file using `evince` or adobe ...
 
 Example
