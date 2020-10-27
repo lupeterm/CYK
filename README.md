@@ -16,12 +16,14 @@ This package takes a CF grammar G and a word w as an input, transforms G into Ch
 2. **Enter Grammar**
 
     → Enter the members of the grammar in order with following syntax:
+For splitting Symbols the following may be used: ',', ';', '.', ' ', '|'
     | Member  | Syntax/Input  |Output| 
     |---|---|---|
     | Symbols  | A, B, C...  | {A, B, C} | 
-    | Terminal Symbols | a, b, c...  |{a, b, c}|
-    | Rules per Symbol (eg. A:) |  B, a, \E  | {A -> B ; a ; \E,...} |
+    | Terminal Symbols | a; b, c...  |{a, b, c}|
+    | Rules per Symbol (eg. A:) |  B. a, \E  | {A -> B ; a ; \E,...} |
     |Starting Symbol|A|A|
+
    → The grammar may also be entered through an external file with following regulations:
 Empty lines in the file will be ignored by the program.
     | Order of lines | Grammar member | Rules | Example |
@@ -30,7 +32,7 @@ Empty lines in the file will be ignored by the program.
     | 2 | Terminal Symbols | lower case letters | a,b |
     | 3 | Starting Symbol | part of Symbols | S |
     | 4 to x | Rules per Symbol | first character of the line is the Symbol | S  AB, AA |
-    | 4 to x | Rules per Symbol | '->' may be inserted for better clarity | A -> BA, a |
+    | 4 to x | Rules per Symbol | '->' may be inserted for better clarity | A -> BA; a |
     | 4 to x | Rules per Symbol | applying rules are stated after the Symbol | B -> b |
     
     Notice that the notation for epsilon is \E. 
