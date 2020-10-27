@@ -1,0 +1,59 @@
+\title{Automatic execution of the CYK algorithm}
+\author{by Simon Gustavs, Lukas Petermann and Undine Holst}
+
+\section{Introduction}
+The CYK algorithm was created by John Cocke, Daniel Younger and Tadao Kasami to determine wether 
+a word is part of a particular context free grammar or not. The grammar needs to be in Chomsky normal 
+form(CNF) to be tested by the CYK algorithm. Therefore the first thing happening after the user enters the 
+grammar and the word is the transformation of the grammar into CNF. After that the CYK algorithm can be 
+executed and the result will be put into a latex file.
+
+\section{Usage}
+To use the program either run \textsf main.py with an IDE of your choosing or via the command line withe the command \texstsf python3 main.py.
+
+\section{Overview}
+Here is the overview over all included program parts:
+
+<<main.py>>=
+/*
+	<<eingabe.py>>
+	<<cyk.py>>
+	<<tabular.py>>
+	<<cnf.py>>
+	<<cnf_test.py>>
+*/
+"""run this file"""
+import subprocess
+import eingabe
+import cyk
+import tabular
+import cnf
+import cnf_test
+
+
+def run_pdflatex(file_name='CYK_Tableau.tex', path='.'):
+    """ cnonvert tex file to pdf"""
+    return subprocess.call(['pdflatex', file_name], cwd=path)
+
+
+grammar = eingabe.CFG()			# eingabe.cfg.new_grammar(grammar)
+word = eingabe.new_word()
+cnf_test.print_grammar(grammar.rules)
+	grammar.rules = dict(S={'aACa'}, A={'B', 'a'}, B={'C', 'c'}, C={'cC', r'\E'})
+	grammar.start = 'S'
+	grammar.alphabet = {'a', 'b', 'c'}
+	grammar.variables = set(key for key in grammar.rules)
+	grammar.rules = cnf.cnf(grammar)  	# bring CFG in Chomsky NF
+print("cnf done")
+cnf_test.print_grammar(grammar.rules)
+table = cyk.cyk(grammar, word)  		# run CYK algorithm
+tableau = tabular.to_latex(table, word, grammar.start, grammar.rules)
+file = open(file="CYK_Tableau.tex", mode="w")
+file.write(tableau)
+file.close()
+print('\nwritten in CYK_Tableau.tex')
+run_pdflatex()
+print('\noutput saved to CYK_Tableau.pdf')
+
+@
+hallo123
