@@ -11,7 +11,7 @@ def run_pdflatex(file_name='CYK_Tableau.tex', path='.'):
     return subprocess.call(['pdflatex', file_name], cwd=path)
 
 grammar = eingabe.CFG()
-if input("Do you want to import your Grammar? [Y/n] ") in ['Y', 'y']:
+if input("Do you want to import your Grammar? [y/N] ") in ['Y', 'y']:
     eingabe.CFG.file_input(grammar)
 else:
     eingabe.CFG.new_grammar(grammar)
