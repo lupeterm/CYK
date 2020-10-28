@@ -22,6 +22,7 @@ input_template.log
 .cyk.tex.swo
 cyk.aux
 cyk.dvi
+cyk.pdf
 cyk.log
 cyk.nw~
 foo.tex
