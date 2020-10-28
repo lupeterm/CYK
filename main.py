@@ -5,10 +5,15 @@ import cyk
 import tabular
 import cnf
 import cnf_test
+import sys
+
 
 def run_pdflatex(file_name='CYK_Tableau.tex', path='.'):
     """convert tex file to pdf"""
-    return subprocess.call(['pdflatex', file_name], cwd=path)
+    if sys.platform == 'linux':
+        return subprocess.call(['pdflatex', file_name], cwd=path)
+    return subprocess.Popen(['miktex.exe', file_name], shell=True)
+
 
 grammar = eingabe.CFG()
 if input("Do you want to import your Grammar? [Y/n] ") in ['Y', 'y']:
@@ -17,11 +22,11 @@ else:
     eingabe.CFG.new_grammar(grammar)
 
 word = eingabe.new_word()
-#cnf_test.print_grammar(grammar.rules)
-#grammar.rules = dict(S={'aACa'}, A={'B', 'a'}, B={'C', 'c'}, C={'cC', r'\E'})
-#grammar.start = 'S'
-#grammar.alphabet = {'a', 'b', 'c'}
-#grammar.variables = set(key for key in grammar.rules)
+# cnf_test.print_grammar(grammar.rules)
+# grammar.rules = dict(S={'aACa'}, A={'B', 'a'}, B={'C', 'c'}, C={'cC', r'\E'})
+# grammar.start = 'S'
+# grammar.alphabet = {'a', 'b', 'c'}
+# grammar.variables = set(key for key in grammar.rules)
 grammar.rules = cnf.cnf(grammar)  # bring CFG in Chomsky NF
 print("cnf done")
 cnf_test.print_grammar(grammar.rules)
