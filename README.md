@@ -3,20 +3,23 @@ Context-Free Grammar Interpreter
 ===
 This package takes a CF grammar G and a word w as an input, transforms G into Chomsky normal form and performs the Cocke-Younger-Kasami-algorithm (CYK) to evaluate wether the word can be created by the grammar or not.
 ## Table of Contents
-
+* **Requirements**
 * **Usage**
 * **Example**
 
 ## Usage
 
-1. **Execute Program** 
+1. **Requirements**
+    → Windows user (my condolences) need to download and install [miktex](https://miktex.org/download).
+    
+2. **Execute Program** 
 
     → Compile from command line using `python3 main.py` or execute `main.py` using your favourite IDE or text editor.
 
-2. **Enter Grammar**
+3. **Enter Grammar**
 
     → Enter the members of the grammar in order with following syntax:
-For splitting Symbols the following may be used: ',', ';', '.', ' ', '|'
+        
     | Member  | Syntax/Input  |Output| 
     |---|---|---|
     | Symbols  | A, B, C...  | {A, B, C} | 
@@ -25,7 +28,9 @@ For splitting Symbols the following may be used: ',', ';', '.', ' ', '|'
     |Starting Symbol|A|A|
 
    → The grammar may also be entered through an external file with following regulations:
-Empty lines in the file will be ignored by the program.
+    
+    Empty lines in the file will be ignored.
+
     | Order of lines | Grammar member | Rules | Example |
     |---|---|---|---|
     | 1 | Symbols | upper case letters | S,A,B |
@@ -44,7 +49,7 @@ Empty lines in the file will be ignored by the program.
 
 4. **Open PDF**
 
-    → Open the .pdf file using `evince` or adobe ...
+    → Open the .pdf file using `evince` or your favourite pdf viewer.
 
 Example
 ---
