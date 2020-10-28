@@ -22,10 +22,10 @@ This package takes a CF grammar G and a word w as an input, transforms G into Ch
         
     | Member  | Syntax/Input  |Output| 
     |---|---|---|
-    | Symbols  | A, B, C...  | {A, B, C} | 
-    | Terminal Symbols | a; b, c...  |{a, b, c}|
-    | Rules per Symbol (eg. A:) |  B. a, \E  | {A -> B ; a ; \E,...} |
-    |Starting Symbol|A|A|
+    | Symbols  | S, B, C...  | {S, B, C} | 
+    | Terminal Symbols | a, b, c...  |{a, b, c}|
+    | Rules per Symbol (eg. S:) |  B, a, \E  | {S -> B | a | \E | ...} |
+    |Starting Symbol|S|S|
 
    → The grammar may also be entered through an external file with following regulations:
     
@@ -36,7 +36,7 @@ This package takes a CF grammar G and a word w as an input, transforms G into Ch
     | 1 | Symbols | upper case letters | S,A,B |
     | 2 | Terminal Symbols | lower case letters | a,b |
     | 3 | Starting Symbol | part of Symbols | S |
-    | 4 to x | Rules per Symbol | first character of the line is the Symbol | S  AB, AA |
+    | 4 to x | Rules per Symbol | first character of the line is the Symbol | S -> AB, AA |
     | 4 to x | Rules per Symbol | '->' may be inserted for better clarity | A -> BA; a |
     | 4 to x | Rules per Symbol | applying rules are stated after the Symbol | B -> b |
     
