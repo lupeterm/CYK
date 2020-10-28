@@ -24,7 +24,7 @@ This package takes a CF grammar G and a word w as an input, transforms G into Ch
     |---|---|---|
     | Symbols  | S, B, C...  | {S, B, C} | 
     | Terminal Symbols | a, b, c...  |{a, b, c}|
-    | Rules per Symbol (eg. S:) |  B, a, \E  | {S -> B | a | \E | ...} |
+    | Rules per Symbol (eg. S:) |  B, a, \E  | {S -> B / a / \E / ...} |
     |Starting Symbol|S|S|
 
    → The grammar may also be entered through an external file with following regulations:
