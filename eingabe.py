@@ -84,7 +84,7 @@ class CFG:
         del file[0:3]
 
         for rules in file:
-            terminal = rules[0]
+            nterminal = rules[0]
             for i in splitter:
                 rules = rules.replace(i, ' ')
             rules = rules.split()
@@ -92,7 +92,7 @@ class CFG:
             rules.remove('->')
             check_syntax(self.variables, self.alphabet, rules)
             for k in rules:
-                self.set_rules(terminal, k)
+                self.set_rules(nterminal, k)
 
 
 
