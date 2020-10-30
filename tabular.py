@@ -39,6 +39,8 @@ def to_latex(table, word, start, rules, before):
     latex_string = latex_string.replace("word", is_in)
     latex_string = Template(latex_string).safe_substitute(before=grammar_to_latex(before))
     latex_string = Template(latex_string).safe_substitute(after=grammar_to_latex(rules))
+    latex_string = latex_string.replace("\\E", "epsilon")
+
     return latex_string
 
 
