@@ -4,10 +4,16 @@
 \begin{center}
 $table
 \newline
-$$
-$word
-\begin{array}{ccl}
-$array
+$$\begin{array}{cc}
+    before:
+    \begin{array}{ccl}
+    $before
+    \end{array}
+    after:
+    \begin{array}{ccl}
+    $after
+    \end{array}
 \end{array} $$
+
 \end{center}
 \end{document}
