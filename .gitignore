@@ -27,6 +27,7 @@ cyk.log
 cyk.nw~
 foo.tex
 version.tex
+notest.py
 
 # Generated files
 .idea/**/contentModel.xml
