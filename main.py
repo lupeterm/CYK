@@ -17,7 +17,7 @@ if input("Do you want to import your Grammar? [y/N] ") in ['Y', 'y']:
     eingabe.CFG.file_input(grammar)
 else:
     eingabe.CFG.new_grammar(grammar)
-
+    
 word = eingabe.new_word()
 # cnf_test.print_grammar(grammar.rules)
 # grammar.rules = dict(S={'aACa'}, A={'B', 'a'}, B={'C', 'c'}, C={'cC', r'\E'})
@@ -25,12 +25,10 @@ word = eingabe.new_word()
 # grammar.alphabet = {'a', 'b', 'c'}
 # grammar.variables = set(key for key in grammar.rules)
 saveGrammar = copy.deepcopy(grammar.rules)
-print(saveGrammar)
 grammar.rules = cnf.cnf(grammar)  # bring CFG in Chomsky NF
 print("cnf done")
 cnf_test.print_grammar(grammar.rules)
 table = cyk.cyk(grammar, word)  # run CYK algorithm
-print(saveGrammar)
 tableau = tabular.to_latex(table, word, grammar.start, grammar.rules, saveGrammar)
 file = open(file="CYK_Tableau.tex", mode="w")
 file.write(tableau)

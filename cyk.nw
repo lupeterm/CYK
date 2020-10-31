@@ -5,8 +5,9 @@
 The CYK algorithm was created by John Cocke, Daniel Younger and Tadao Kasami to determine wether 
 a word is part of a particular context free grammar or not. The grammar needs to be in Chomsky normal 
 form(CNF) to be tested by the CYK algorithm. Therefore the first thing happening after the user enters the 
-grammar and the word is the transformation of the grammar into CNF. After that the CYK algorithm can be 
-executed and the result will be put into a latex file.
+grammar and the word, is the transformation of the grammar into CNF. After that the CYK algorithm can be 
+executed and the result will be put into a LaTeX and PDF file. The following code segments will have a comment by whom they were written.
+This documentation was written by Undine Holst. The executability of this noweb documentation was ensured by Undine Holst with a helping hand from Simon Gustavs.
 
 \section{Usage}
 Windows user will have to install MikTex (https://miktex.org/download) to ensure the output of the result in the PDF.
@@ -19,18 +20,18 @@ For the output the symbols will be framed by curly brackets.
 \newline	Terminal Symbols are represented by lower case letters and are put in and out the same way as symbols.
 \newline E.g.: In: 'a,b,c' Out: '\{a,b,c\}'
 \newline	For each Symbol (e.g. A) there will be rules required. Those are also divided by commas. 
-\newline E.g.: If A can be turned into B, a or epsilon: In: A: 'B, a, \textbackslash E' Out: '\{A -$>$ B;a;\E\}'
+\newline E.g.: If A can be turned into B, a or epsilon: In: A: 'B, a, \textbackslash E' Out: '\{A -$>$ B,a,\textbackslash E\}'
 \newline	The starting symbol has to be one of the symbols(upper case). 
 And note that epsilon has to be written as '\textbackslash E'.
 \newline
 \newline If the input is realized through an external file that file needs to be structured as follows:
-\newline Empty lines will be ignored by the program.
 \newline The first filed line needs to contain all variables represented by upper case letters divided by any of the allowed splitting symbols. 
 \newline The second filled line needs to contain the alphabet represented by lower case letters also divided by any of the allowed splitting symbols.
 \newline The third filled line has to contain the starting symbol which must be part of the variables.
 \newline The following non-empty lines must contain the rules for each variable. The first character of the lines for the rules needs to be the variable for that 
 the rules of this line apply. For better clarity next an arrow like this '-$>$' may be used to differentiate between the key variable and the rules. Then the rules need 
 to be stated using the already known splitting symbols.
+\newline Empty lines will be ignored by the program.
 \newline A file could look like this:
 \newline
 \newline 1 S,A,B
@@ -41,8 +42,7 @@ to be stated using the already known splitting symbols.
 \newline 6 A -$>$ BA, a
 \newline 7 B -$>$ b
 \newline
-\newline Next the word that the user wants to analyze will be asked for. Afterwards the program will be executed and the user
- needs to press enter time and time again until the program is done.
+\newline Next the word that the user wants to analyze will be asked for. Afterwards the program will be executed.
 Now the file CYK\_Tableau.pdf shows the cyk building table and the cnf of the grammar if opened.
 
 \newpage
@@ -50,60 +50,71 @@ Now the file CYK\_Tableau.pdf shows the cyk building table and the cnf of the gr
 
 In the main program all other important parts of the program are executed.
 <<main>>=
-	<<eingabe>>
-	<<cyk>>
-	<<output>>
-	<<cnf>>
-	<<tests>>
-	<<runpdflatex>>
-	<<input>>
-	<<chomskynf>>
-
 import subprocess
-import eingabe
-import cyk
-import tabular
-import cnf
-import cnf_test
+import string
+import tabulate
+from string import Template
+import copy
+
+<<eingabe>>
+<<cnf>>
+<<cyk>>
+<<output>>
+<<runpdflatex>>
+<<printgrammar>>
+<<inputmain>>
+<<chomskynf>>
+<<execcyk>>
 
 @
-First the needed files are imported. Then a function to call the subprocess for carrying out the converting of the the latex
- file into a pdf file is defined.
- 
+First the needed files are imported. Then a function to call the subprocess for carrying out the converting of the the LaTeX
+ file into a PDF file is defined.
 <<runpdflatex>>=
+#Lukas
 def run_pdflatex(file_name='CYK_Tableau.tex', path='.'):
     return subprocess.call(['pdflatex', file_name], cwd=path)
+@
+For reference it is good to visualize the current state of the grammar from time to time. Therefore the grammar will be printed 
+when needed. Since the grammar is a set it is just printed like follows:
+<<printgrammar>>=
+#Lukas
+def print_grammar(rules):
+    """pretty print grammar"""
+    for key, value in rules.items():
+        print(f'{key} --> {value}')
+    print("\n")
 
 @
 Afterwards the input of all necessary information about the grammar and the word in question is carried out. The grammar may
- be imported so that possibility is given through a yes/no decision.
- 
-<<input>>=
-grammar = eingabe.CFG()
+ be imported so that possibility is given through a yes/no decision. The original grammar gets preserved by a deepcopy.
+<<inputmain>>=
+#Simon
+grammar = CFG()
 if input("Do you want to import your Grammar? [y/N] ") in ['Y', 'y']:
-    eingabe.CFG.file_input(grammar)
+    CFG.file_input(grammar)
 else:
-	 eingabe.CFG.new_grammar(grammar)
-word = eingabe.new_word()
+	CFG.new_grammar(grammar)
+word = new_word()
+saveGrammar = copy.deepcopy(grammar.rules)
 
 @
 Then the routine for converting the grammar into CNF is called. While converting there will be intermediate outputs. Therefore
  after the routine is done, there will be a success message and the converted grammar will be printed.
- 
 <<chomskynf>>=
-grammar.rules = cnf.cnf(grammar)
+#Simon
+grammar.rules = cnf(grammar)
 print("cnf done")
-cnf_test.print_grammar(grammar.rules)
+print_grammar(grammar.rules)
 
 @
 After all the preparations are done, the CYK algorithm is executed and the result is stored in a table.
-Then a function to convert that table, the grammar and the word in question into a latex text is called.
-The latex file is opened, the text is written into it and it is closed again. Then a success message is printed.
- Lastly the latex file is turned into a pdf file using the run\_ pdflatex function and again a success message is printed.
- 
+Then a function to convert that table, the grammar and the word in question into a LaTeX text is called.
+The LaTeX file is opened, the text is written into it and it is closed again. Then a success message is printed.
+ Lastly the LaTeX file is turned into a PDF file using the run\_ pdflatex function and again a success message is printed.
 <<execcyk>>=
-table = cyk.cyk(grammar, word)
-tableau = tabular.to_latex(table, word, grammar.start, grammar.rules)
+#Simon
+table = cyk(grammar, word)
+tableau = to_latex(table, word, grammar.start, grammar.rules, saveGrammar)
 file = open(file="CYK_Tableau.tex", mode="w")
 file.write(tableau)
 file.close()
@@ -115,23 +126,19 @@ print('\noutput saved to CYK_Tableau.pdf')
 \section{Input}
 Through the input a context free grammar and a word to be tested of being part of the grammar are entered. 
 First of all a list with splitting symbols is defined in order to be able to differentiate different symbols.
-
 <<eingabe>>=
-
+#Simon
+splitter = ['.', ';', '  ', ',', '|']
 	<<newword>>
 	<<cfg>>
 	<<csvar>>
 	<<csyntax>>
 
-
-splitter = ['.', ';', '  ', ',', '|']
-
 @
 Next the input of the word in question is realized. In order to test the word later the string from the input is converted 
 into a character list.
-
 <<newword>>=
-
+#Simon
 def new_word():
     word = input("Please enter the word. \n")
     char_list = []
@@ -142,17 +149,15 @@ def new_word():
 @
 A context free grammar consists of variables, an alphabet, a set of rules and a start variable. Therefore a class for context
  free grammars (CFG) is defined.
- 
 <<cfg>>=
-
 	<<initcfg>>
 	<<ngrammar>>
-	<<filein>>
+	<<rls>>
+
 @
 The members of a context free grammar (variables, the alphabet, the rules and the start variable) are defined as follows:
- 
 <<initcfg>>=
-
+#Simon
 class CFG:
 
     def __init__(self):
@@ -185,9 +190,8 @@ assigned as the alphabet of the grammar. The rules for each variable are then in
 splitting symbols with space and turning the string into a list, the function for checking the syntax is called. If the syntax is fine the sets of keys and
  values are assigned as the rules of the grammar. After that the start variable is inquired from the user and is tested to 
  be part of the variables.
-
 <<ngrammar>>=
-
+#Simon
     def new_grammar(self):
         var = input("Please enter all symbols.\n")
         for i in splitter:
@@ -220,51 +224,49 @@ all lines from which the empty lines are removed. The splitting symbols in the f
 the first line is assigned as the variables and the second line as the alphabet. The start variable from the third line is 
 then checked to be part of the variables. Next the first three lines of the file will be deleted so just the rules of the 
 grammar will be left in the file. 
-
 <<filein>>=
+#Simon
+    def file_input(self):
+            
+        file = open(input("Enter filename you want to import.\n"), "r").read().splitlines()
+        for i in file:
+            if i == '':
+                file.remove(i)
+        for i in splitter:
+            file[0] = file[0].replace(i, ' ')
+            file[1] = file[1].replace(i, ' ')
+        self.set_variables(file[0].split())
+        self.set_alphabet(file[1].split())
 
-def file_input(self):
-        
-    file = open(input("Enter filename you want to import.\n"), "r").read().splitlines()
-    for i in file:
-        if i == '':
-            file.remove(i)
-    for i in splitter:
-        file[0] = file[0].replace(i, ' ')
-        file[1] = file[1].replace(i, ' ')
-    self.set_variables(file[0].split())
-    self.set_alphabet(file[1].split())
-
-    self.set_start(file[2])
-    check_start(self.variables, self.start)
-    del file[0:3]
+        self.set_start(file[2])
+        check_start(self.variables, self.start)
+        del file[0:3]
 
 @
 Now just the lines with rules are left in the file. So for each line the strings need to be translated into usable information for the program. 
 The first character of each line is then set as the nonterminal symbol for which the rules of this line are intended. Next all splitting symbols are 
 replaced by space and the line is split into a list. Since the nonterminal is already saved, it is then deleted from the file. If the entered rules 
 do follow the syntax the rules are assigned to the grammar.
-
 <<rls>>=
+#Simon
 	<<filein>>
-	
-    for rules in file:
-        nterminal = rules[0]
-        for i in splitter:
-            rules = rules.replace(i, ' ')
-        rules = rules.split()
-        del rules[0]
-        rules.remove('->')
-        check_syntax(self.variables, self.alphabet, rules)
-        for k in rules:
-            self.set_rules(nterminal, k)
+        for rules in file:
+            nterminal = rules[0]
+            for i in splitter:
+                rules = rules.replace(i, ' ')
+            rules = rules.split()
+            del rules[0]
+            rules.remove('->')
+            check_syntax(self.variables, self.alphabet, rules)
+            for k in rules:
+                self.set_rules(nterminal, k)
 
 @
 The syntax of the grammar needs to be checked for the program to work. Therefore the variables from the input are divided 
 into upper and lower case variables. Then for each lower and upper case variable it is checked whether they are part of the 
 alphabet respectively the variables. If not then an error message will be displayed.
-
 <<csyntax>>=
+#Simon
 def check_syntax(variables, alphabet, rules):
     lower = []
     upper = []
@@ -288,8 +290,8 @@ def check_syntax(variables, alphabet, rules):
 
 @
 The start variable also needs to be checked of being part of the variables. If it is not, an error message is shown again.
-
 <<csvar>>=
+#Simon
 def check_start(variables, start):
     if start not in variables:
         print("The starting Symbol has to be part of the symbols. \n")
@@ -303,45 +305,36 @@ of chain rules. Then not isolated terminal symbols on the right side of the rule
 that uses ASCII code for the variables returns the new grammar rules and the value 'true' respectively '1'. In the end the long right sides are eliminated. If the symbols exceed the alphabet 
 an alternative function for the elimination of long right sides with exceeding number of symbols is used.
 After each step a success message and the current state of the grammar are shown. When the grammar is successfully converted into Chomsky Normal Form it is returned.
-
 <<cnf>>=
-
+#Lukas
 	<<epsilonelim>>
 	<<chainelim>>
 	<<nonisoelim>>
 	<<lrelim>>
 	<<cnfalt>>
-
-
-import string
-import cnf_test
-import cyk
-import cnf_alternative
-
-
 def cnf(grammar):
     grammar.rules = epsilon_elim(grammar.start, grammar.rules)
     print("Occurrences of epsilon eliminated.")
-    cnf_test.print_grammar(grammar.rules)
+    print_grammar(grammar.rules)
     
     grammar.rules = chain_elim(grammar.rules)
     print("Occurrences of chained rules eliminated.")
-    cnf_test.print_grammar(grammar.rules)
+    print_grammar(grammar.rules)
     
     grammar_alternative = non_iso_term_elim(grammar.rules, grammar.variables, 
     														grammar.alphabet)
     print("Occurrences of non isolated terminal symbols eliminated.")
-    cnf_test.print_grammar(grammar_alternative[0])
+    print_grammar(grammar_alternative[0])
     
     if grammar_alternative[1]:
-        grammar_alternative = cnf_alternative.long_right_alternative(
+        grammar_alternative = long_right_alternative(
         										grammar_alternative[0])
         print("Occurrences of long right sides eliminated.")
         return grammar_alternative
         
     grammar.rules = long_right_elim(grammar_alternative[0], grammar.alphabet)
     print("Occurrences of long right sides eliminated.")
-    cnf_test.print_grammar(grammar.rules)
+    print_grammar(grammar.rules)
     return grammar.rules
 
 @
@@ -354,11 +347,11 @@ If there are empty rules, those will be replaced by the notation '\textbacklslas
 epsilon key rules. If there are still epsilons left in other rules, those will be added as new epsilon rules and the whole function will be started all 
 over. That will also happen if there is just one epsilon rule left that is not pointing from the start symbol to the empty word. If the function does 
 not need to be started over the changed rules are returned.
-
 <<epsilonelim>>=
+#Undine
 def epsilon_elim(start, rules):
     eps = r'\E'
-    eps_keys = cyk.check_rule(rules, eps)
+    eps_keys = check_rule(rules, eps)
     if not eps_keys:
         return rules
     for key, value in rules.items():
@@ -378,7 +371,7 @@ def epsilon_elim(start, rules):
         rules[key] = tmpval
     for key in eps_keys:
         rules[key].remove(r'\E')
-    eps_keys = cyk.check_rule(rules, eps)
+    eps_keys = check_rule(rules, eps)
     if len(eps_keys) > 1 or not (len(eps_keys) == 1 and start in eps_keys):
         return epsilon_elim(start, rules)
     return rules
@@ -388,8 +381,8 @@ Next all chain rules will be eliminated. Therefore all key variables (nontermina
 Then iterating through all keys the rules for each key will be added to the new dictionary. If a key is a value for another variable in the grammar that variable will 
 be added to new\_keys. Then the rules from any of the new\_keys members will be expanded by the rules for the key and the key itself will be removed from the values of that rule.
 When all keys have been considered the now chain free grammar will be returned.
-
 <<chainelim>>=
+#Undine
 def chain_elim(rules):
     keys = []
     for key in rules.keys():
@@ -397,7 +390,7 @@ def chain_elim(rules):
     new_dict = {}
     for key in list(keys):
         new_dict.update({key: rules[key]})
-        new_keys = cyk.check_rule(rules, key)
+        new_keys = check_rule(rules, key)
         for k in new_keys:
             rules[k].update(rules[key])
             rules[k].remove(key)
@@ -414,13 +407,13 @@ the previous step. There are a lot of substitute variables in this part of the c
 be changed until after all steps are done. After the function is done it will be checked whether it was fully effective and 
 if not then the function is called again. Lastly the changed grammar and the value 'false' (which stands for not having used 
 the alternative function for long alphabets) are returned.
-
 <<nonisoelim>>=
+#Lukas
 def non_iso_term_elim(rules, variables, alphabet):
     alph = set(string.ascii_uppercase) - set(variables)
     new_dict = dict()
     if len(alphabet) > len(alph):
-        return cnf_alternative.non_iso_term_elim_alternative(rules, variables, 
+        return non_iso_term_elim_alternative(rules, variables, 
         																			alphabet)
     map_term_not_term = [(char, symbol) for char, symbol
                          in zip(alphabet, alph)]
@@ -455,12 +448,12 @@ of the rule are saved as a new rule for which a new key is extracted from the re
 and the last two symbols of the original rule are replaced with the new key. Next the changed rule is updated and 
 the new rule is added to the grammar. If there are still rules with more than two symbols left in the grammar then 
 the whole function is repeated. Otherwise the changed grammar will be returned.
-
 <<lrelim>>=
+#Lukas
 def long_right_elim(rules, alphabet):
     alph = set(string.ascii_uppercase) - set(key for key in rules)
     if len(alphabet) > len(alph):
-        return cnf_alternative.long_right_alternative(rules)
+        return long_right_alternative(rules)
     new_dict = dict()
     for key, values in rules.items():
         tmp_val = values.copy()
@@ -489,20 +482,16 @@ def long_right_elim(rules, alphabet):
 Like already mentioned in the section before there are cases where the ASCII upper case letters 
 are not enough to follow through with the functions. Therefore for the elimination of not isolated 
 terminal symbols and long right sides there are alternative functions.
-
 <<cnfalt>>=
-
 	<<nonisoalt>>
 	<<lralt>>
-
-import string
 
 @
 The alternative function for eliminating not isolated terminal symbols works roughly the 
 same way as the original function. The only difference is that the set of not yet assigned upper 
 case letters does include as many ASCII uppercase letters as needed.
-
 <<nonisoalt>>=
+#Lukas
 def non_iso_term_elim_alternative(rules, variables, alphabet):
     alph = set(string.ascii_uppercase) - set(variables)
     length_difference = len(alphabet) - len(alph)
@@ -543,8 +532,8 @@ long alphabet. It works just like the original function with the difference that
 whether there already are keys that are ASCII upper case letters and then uses all other ASCII 
 upper case letters as not yet assigned values. And it also pays attention to the ASCII symbols 
 throughout the whole process.
-
 <<lralt>>=
+#Lukas
 def long_right_alternative(rules):
     alternate_keys = [list(key)[0] for key in rules.keys() if len(key) > 1]
     alph = set(string.ascii_uppercase) - set(alternate_keys)
@@ -593,9 +582,7 @@ def long_right_alternative(rules):
 @
 \section{CYK algorithm}
 The most important part of this program is the CYK algorithm itself as the title says. 
-
 <<cyk>>=
-
 	<<crule>>
 	<<matrixmult>>
 	<<cykexec>>
@@ -604,8 +591,8 @@ The most important part of this program is the CYK algorithm itself as the title
 @
 The function for finding keys for certain values has already been used a lot in this program. 
 Here it is defined:
-
 <<crule>>=
+#Simon
 def check_rule(rules, rhs):
     symbols = [key for key, value in rules.items() if rhs in value]  
     return symbols
@@ -619,8 +606,8 @@ that those combinations may derive from are then saved in the panel. For the nex
 row from left to right will be combined with the fields of the column from high to low to fill the panel. This goes 
 on until the whole tableau is filled and then returned. The function that combines the fields and searches out the 
 results for the panel in question is matrixmult.
-
 <<cykexec>>=
+#Lukas
 def cyk(grammar, word):
     tableau = []
     word_length = len(word)
@@ -647,8 +634,8 @@ is split into two and both parts are attached to the nonterminals for left respe
 in the cell will directly be assigned as the nonterminals. Then all keys from which the combined rule could derive 
 from are saved in a two dimensional array that is then turned into a list. Then the nonterminals for the cell in question 
 are returned.
-
 <<matrixmult>>=
+#Lukas
 def matrixmult(rules, lhs, rhs):
     non_terminals = []
     non_terminals_left = list()
@@ -678,12 +665,8 @@ be converted into a text that LaTex can handle and convert into a PDF. So this f
 creates a string with the correct LaTex syntax to show the table that was used for the CYK algorithm,
 the grammar from the input, the grammar after converting it into CNF and whether the word is part of the 
 grammar.
-
 <<output>>=
-from string import Template
-import tabulate
-
-
+#Lukas, Simon
 def to_latex(table, word, start, rules, before):
 
     v_indices = [str(x + 1)for x in range(len(word))]
@@ -721,433 +704,9 @@ def to_latex(table, word, start, rules, before):
 def grammar_to_latex(rules):
     table_string = ''
     for key, values in rules.items():
-        table_string = table_string + '{key} & \\rightarrow & {values} \\\ \n'
+        table_string = table_string + f'{key} & \\rightarrow & {values} \\\ \n'
     table_string = table_string.replace("'", "")
     table_string = table_string.replace(', ', ' \\mid ')
     table_string = table_string.replace('}', '')
     table_string = table_string.replace('{', '')
     return table_string
-
-@    
-\section{Tests}
-For making sure that the program works there were a lot of tests executed. For possible errors 
-there are independent error messages. And there is also a function to print out the grammar in between 
-to be able to check whether all went well. To test all functions there are six unit tests. They all first 
-define a grammar. Then the grammar is printed as reference and the four steps of converting a grammar into CNF 
-are tested. After each testing part there will be a feedback that is either an error message or the changed grammar.
-
-<<tests>>=
-
-	<<testA>>
-
-import random
-import string
-import unittest
-import cnf
-import cnf_alternative
-import eingabe
-import cyk
-import tabular
-
-ERRMSG_ELIM = r'something went wrong: unexpected occurrence of \E.'
-ERRMSG_NON_ISO = "something went wrong: unexpected occurrence of terminal symbol."
-ERRMSG_LONG_RIGHT = "something went wrong: expected length was <3."
-ERRMSG_CHAIN = "something went wrong: unexpected single non-terminal symbol."
-
-<<testA>>=
-class TestCasesA(unittest.TestCase):
-
-    def setUp(self) -> None:
-        self.grammar = eingabe.CFG()
-        self.grammar.rules = {
-            'S': {'ASA', 'aB'},
-            'A': {'B', 'S'},
-            'B': {'b', r'\E'}
-        }
-        self.grammar.alphabet = {'a', 'b'}
-        self.grammar.variables = set(key for key in self.grammar.rules)
-        self.grammar.start = 'S'
-        print_grammar(self.grammar.rules)
-
-    def test_epsilon_elim(self):
-        self.grammar.rules = cnf.epsilon_elim(self.grammar.start, self.grammar.rules)
-        for key, val in self.grammar.rules.items():
-            if key is not self.grammar.start:
-                self.assertNotIn(r'\E', val, ERRMSG_ELIM)
-        print("eliminated_ all occurrences of epsilon:")
-        print_grammar(self.grammar.rules)
-
-    def test_elim_chains(self):
-        eliminated_a = cnf.chain_elim(self.grammar.rules)
-        for values in eliminated_a.values():
-            for val in values:
-                self.assertFalse(val.isupper() and len(val) == 1, ERRMSG_CHAIN)
-        print("eliminated_ all occurrences of chained rules:")
-        print_grammar(eliminated_a)
-
-    def test_elim_nonisoterm(self):
-        self.grammar.rules = cnf.non_iso_term_elim(
-            self.grammar.rules, self.grammar.variables, self.grammar.alphabet
-        )
-        if isinstance(self.grammar.rules, tuple):
-            for value in self.grammar.rules[0].values():
-                for strings in value:
-                    if len(strings) > 1:
-                        for term in self.grammar.alphabet:
-                            self.assertNotIn(term, strings, ERRMSG_NON_ISO)
-        print("Successfully eliminated_ all occurrences of non-isolated terminal symbols.")
-
-    def test_elim_long_right(self):
-        self.grammar.rules = cnf.cnf(self.grammar)
-        print_grammar(self.grammar.rules)
-        for value in self.grammar.rules.values():
-            for val in value:
-                self.assertIsNot(len(val), 3 or 4 or 5, ERRMSG_LONG_RIGHT)
-        print("successfully eliminated_ long right sides for TEST_A: ")
-        print_grammar(self.grammar.rules)
-
-
-class TestCasesB(unittest.TestCase):
-
-    def setUp(self):
-        self.grammar = eingabe.CFG()
-        self.grammar.rules = {
-            'S': {'TU'},
-            'T': {'aTb', r'\E'},
-            'U': {'R'},
-            'R': {'Ucc', r'\E'}
-        }
-        self.grammar.alphabet = {'a', 'b', 'c'}
-        self.grammar.variables = set(key for key in self.grammar.rules)
-        self.grammar.start = 'S'
-        print_grammar(self.grammar.rules)
-
-    def test_epsilon_elim(self):
-        self.grammar.rules = cnf.epsilon_elim(self.grammar.start, self.grammar.rules)
-        eps_keys = cyk.check_rule(self.grammar.rules, r'\E')
-        self.assertLessEqual(len(eps_keys), 1)
-        if len(eps_keys) == 1:
-            self.assertIn(self.grammar.start, eps_keys)
-        print("eliminated_ all occurrences of epsilon:")
-        print_grammar(self.grammar.rules)
-
-    def test_elim_chains(self):
-        eliminated_b = cnf.chain_elim(self.grammar.rules)
-        for values in eliminated_b.values():
-            for val in values:
-                self.assertFalse(val.isupper() and len(val) == 1, ERRMSG_CHAIN)
-        print("eliminated_ all occurrences of chained rules:")
-        print_grammar(eliminated_b)
-
-    def test_elim_nonisoterm(self):
-        eliminated_b = cnf.non_iso_term_elim(
-            self.grammar.rules, self.grammar.variables, self.grammar.alphabet
-        )
-        print_grammar(self.grammar.rules)
-        if isinstance(eliminated_b, tuple):
-            for value in eliminated_b[0].values():
-                for strings in value:
-                 if len(strings) > 1:
-                    for term in self.grammar.alphabet:
-                        self.assertNotIn(term, strings, ERRMSG_NON_ISO)
-        else:
-            for value in eliminated_b.values():
-                for strings in value:
-                 if len(strings) > 1:
-                    for term in self.grammar.alphabet:
-                        self.assertNotIn(term, strings, ERRMSG_NON_ISO)
-        print("Successfully eliminated_ all occurrences of non-isolated terminal symbols.")
-
-    def test_elim_long_right(self):
-        shorted_b = cnf.cnf(self.grammar)
-        for value in shorted_b.values():
-            for val in value:
-                self.assertIsNot(len(val), 3 or 4 or 5, ERRMSG_LONG_RIGHT)
-        print("successfully eliminated_ long right sides for TEST_A: ")
-        print_grammar(shorted_b)
-
-
-class TestCasesC(unittest.TestCase):
-
-    def setUp(self):
-        self.grammar = eingabe.CFG()
-        self.grammar.rules = {
-            'S': {'ASA', 'BSB', r'\E'},
-            'A': {'a'},
-            'B': {'b'}
-        }
-        self.grammar.alphabet = {'a', 'b'}
-        self.grammar.variables = set(key for key in self.grammar.rules)
-        self.grammar.start = 'S'
-        print_grammar(self.grammar.rules)
-
-    def test_epsilon_elim(self):
-
-        self.grammar.rules = cnf.chain_elim(self.grammar.rules)
-        eliminated_c = cnf.epsilon_elim(self.grammar.start, self.grammar.rules)
-        for key, val in eliminated_c.items():
-            if key is not self.grammar.start:
-                self.assertNotIn(r'\E', val, ERRMSG_ELIM)
-        print("eliminated_ all occurrences of epsilon:")
-        print_grammar(eliminated_c)
-
-    def test_elim_chains(self):
-        eliminated_c = cnf.chain_elim(self.grammar.rules)
-        for values in eliminated_c.values():
-            for val in values:
-                self.assertFalse(val.isupper() and len(val) == 1, ERRMSG_CHAIN)
-        print("eliminated_ all occurrences of chained rules:")
-        print_grammar(eliminated_c)
-
-    def test_elim_nonisoterm(self):
-        eliminated_c = cnf.non_iso_term_elim(
-            self.grammar.rules, self.grammar.variables, self.grammar.alphabet
-        )
-        print_grammar(self.grammar.rules)
-        if isinstance(eliminated_c, tuple):
-            for value in eliminated_c[0].values():
-                for strings in value:
-                    if len(strings) > 1:
-                        for term in self.grammar.alphabet:
-                            self.assertNotIn(term, strings, ERRMSG_NON_ISO)
-        else:
-            for value in eliminated_c.values():
-                for strings in value:
-                    if len(strings) > 1:
-                        for term in self.grammar.alphabet:
-                            self.assertNotIn(term, strings, ERRMSG_NON_ISO)
-        print("Successfully eliminated_ all occurrences of non-isolated terminal symbols.")
-
-    def test_elim_long_right(self):
-        shorted_c = cnf.long_right_elim(self.grammar.rules, self.grammar.alphabet)
-        for value in shorted_c.values():
-            for val in value:
-                self.assertIsNot(len(val), 3 or 4 or 5, ERRMSG_LONG_RIGHT)
-        print("successfully eliminated_ long right sides for TEST_A: ")
-        print_grammar(shorted_c)
-
-
-class TestCasesD(unittest.TestCase):
-
-    def setUp(self):
-        self.grammar = eingabe.CFG()
-        self.grammar.rules = {
-            'S': {'LR', r'\E'},
-            'L': {'ALLA', 'BLLB', r'\E'},
-            'R': {'ARA', 'BRB', r'\E'},
-            'A': {'a'},
-            'B': {'b'}
-        }
-        self.grammar.alphabet = {'a', 'b'}
-        self.grammar.variables = set(key for key in self.grammar.rules)
-        self.grammar.start = 'S'
-        print_grammar(self.grammar.rules)
-
-    def test_epsilon_elim(self):
-        self.grammar.rules = cnf.chain_elim(self.grammar.rules)
-        self.grammar.rules = cnf.epsilon_elim(self.grammar.start, self.grammar.rules)
-        print_grammar(self.grammar.rules)
-        for key, val in self.grammar.rules.items():
-            if key is not self.grammar.start:
-                self.assertNotIn(r'\E', val, ERRMSG_ELIM)
-        print("eliminated_ all occurrences of epsilon:")
-
-    def test_elim_chains(self):
-        eliminated_d = cnf.chain_elim(self.grammar.rules)
-        for values in eliminated_d.values():
-            for val in values:
-                self.assertFalse(val.isupper() and len(val) == 1, ERRMSG_CHAIN)
-        print("eliminated_ all occurrences of chained rules:")
-        print_grammar(eliminated_d)
-
-    def test_elim_nonisoterm(self):
-        eliminated_d = cnf.non_iso_term_elim(
-            self.grammar.rules, self.grammar.variables, self.grammar.alphabet)
-
-        if isinstance(eliminated_d, tuple):
-            for value in eliminated_d[0].values():
-                for strings in value:
-                    if len(strings) > 1:
-                        for term in self.grammar.alphabet:
-                            self.assertNotIn(term, strings, ERRMSG_NON_ISO)
-        else:
-            for value in eliminated_d.values():
-                for strings in value:
-                    if len(strings) > 1:
-                        for term in self.grammar.alphabet:
-                            self.assertNotIn(term, strings, ERRMSG_NON_ISO)
-        print("Successfully eliminated_ all occurrences of non-isolated terminal symbols.")
-
-    def test_elim_long_right(self):
-        self.grammar.rules = cnf.epsilon_elim(self.grammar.start, self.grammar.rules)
-        print_grammar(self.grammar.rules)
-        self.grammar.rules = cnf.chain_elim(self.grammar.rules)
-        print_grammar(self.grammar.rules)
-        self.grammar.rules = cnf.non_iso_term_elim(
-            self.grammar.rules, self.grammar.variables, self.grammar.alphabet
-        )
-        if isinstance(self.grammar.rules, tuple):
-            print_grammar(self.grammar.rules[0])
-            shorted_d = cnf.long_right_elim(self.grammar.rules[0], self.grammar.alphabet)
-            for value in shorted_d.values():
-                for val in value:
-                    self.assertIsNot(len(val), 3 or 4 or 5, ERRMSG_LONG_RIGHT)
-        else:
-            print_grammar(self.grammar.rules)
-            shorted_d = cnf.long_right_elim(self.grammar.rules, 
-            										self.grammar.alphabet)
-            for value in shorted_d.values():
-                for val in value:
-                    self.assertIsNot(len(val), 3 or 4 or 5, ERRMSG_LONG_RIGHT)
-        print("successfully eliminated_ long right sides for TEST_A: ")
-        print_grammar(shorted_d)
-
-
-class TestCasesE(unittest.TestCase):
-
-    def setUp(self):
-        self.grammar = eingabe.CFG()
-        self.grammar.rules = {
-            'S': {'aaA'},
-            'A': {'BAB', 'B', r'\E'},
-            'B': {'bb'}
-        }
-        self.grammar.alphabet = {'a', 'b'}
-        self.grammar.variables = set(key for key in self.grammar.rules)
-        self.grammar.start = 'S'
-        print("grammar:")
-        print_grammar(self.grammar.rules)
-
-    def test_epsilon_elim(self):
-
-        self.grammar.rules = cnf.chain_elim(self.grammar.rules)
-        eliminated_e = cnf.epsilon_elim(self.grammar.start, self.grammar.rules)
-        for key, val in eliminated_e.items():
-            if key is not self.grammar.start:
-                self.assertNotIn(r'\E', val, ERRMSG_ELIM)
-        print("eliminated_ all occurrences of epsilon:")
-        print_grammar(eliminated_e)
-
-    def test_elim_chains(self):
-        eliminated_e = cnf.chain_elim(self.grammar.rules)
-        for values in eliminated_e.values():
-            for val in values:
-                self.assertFalse(val.isupper() and len(val) == 1, ERRMSG_CHAIN)
-        print("eliminated_ all occurrences of chained rules:")
-        print_grammar(eliminated_e)
-
-    def test_elim_nonisoterm(self):
-        eliminated_e = cnf.non_iso_term_elim(
-            self.grammar.rules, self.grammar.variables, self.grammar.alphabet
-        )
-        if isinstance(eliminated_e, tuple):
-            for value in eliminated_e[0].values():
-                for strings in value:
-                    if len(strings) > 1:
-                        for term in self.grammar.alphabet:
-                            self.assertNotIn(term, strings, ERRMSG_NON_ISO)
-        else:
-            for value in eliminated_e.values():
-                for strings in value:
-                    if len(strings) > 1:
-                        for term in self.grammar.alphabet:
-                            self.assertNotIn(term, strings, ERRMSG_NON_ISO)
-        print("Successfully eliminated_ all occurrences of non-isolated terminal symbols.")
-
-    def test_elim_long_right(self):
-        self.grammar.rules = cnf.non_iso_term_elim(
-            self.grammar.rules, self.grammar.variables, self.grammar.alphabet
-        )
-        if isinstance(self.grammar.rules, tuple):
-            print_grammar(self.grammar.rules[0])
-            shorted_e = cnf.long_right_elim(self.grammar.rules[0], 
-            											self.grammar.alphabet)
-            print_grammar(shorted_e)
-            for value in shorted_e.values():
-                for val in value:
-                    self.assertIsNot(len(val), 3 or 4 or 5, ERRMSG_LONG_RIGHT)
-        else:
-            print_grammar(self.grammar.rules)
-            shorted_e = cnf.long_right_elim(self.grammar.rules, self.grammar.alphabet)
-            print_grammar(shorted_e)
-            for value in shorted_e.values():
-                for val in value:
-                    self.assertIsNot(len(val), 3 or 4 or 5, ERRMSG_LONG_RIGHT)
-        print("successfully eliminated_ long right sides for TEST_E: ")
-
-
-class TestCasesAlternative(unittest.TestCase):
-
-    def setUp(self):
-        self.grammar = eingabe.CFG()
-        self.grammar.rules = {
-            "A": {"aBcD", "a"},
-            "B": {"aBcD", "a"},
-            "C": {"aBcD", "a"},
-            "D": {"aBcD", "a"},
-            "E": {"aBcD", "a"},
-            "F": {"aBcD", "a"},
-            "G": {"aBcD", "a"},
-            "H": {"aBcD", "a"},
-            "I": {"aBcD", "a"},
-            "J": {"aBcD", "a"},
-            "K": {"aBcD", "a"},
-            "L": {"aBcD", "a"},
-            "M": {"aBcD", "a"},
-            "N": {"aBcD", "a"},
-            "O": {"aBcD", "a"},
-            "P": {"aBcD", "a"},
-            "Q": {"aBcD", "a"},
-            "R": {"aBcD", "a"},
-            "S": {"aBcD", "a"},
-            "T": {"aBcD", "a"},
-            "U": {"aBcD", "a"},
-            "V": {"aBcD", "a"},
-            "W": {"aBcD", "a"},
-            "X": {"aBcD", "a"},
-            "Y": {"aBcD", "a"},
-            "Z": {"aBcD", "a"}
-        }
-        self.grammar.alphabet = {'a', 'c'}
-        self.grammar.variables = set(key for key in self.grammar.rules)
-        self.grammar.start = 'S'
-        print("grammar:")
-        print_grammar(self.grammar.rules)
-
-    def test_non_iso_alternative(self):
-        eliminated_e = cnf_alternative.non_iso_term_elim_alternative(
-            self.grammar.rules, self.grammar.variables, self.grammar.alphabet
-        )
-        print_grammar(eliminated_e[0])
-
-        for value in eliminated_e[0].values():
-            for strings in value:
-                if len(strings) > 1:
-                    for term in self.grammar.alphabet:
-                        self.assertNotIn(term, strings, ERRMSG_NON_ISO)
-        print("Successfully eliminated_ all occurrences of non-isolated terminal symbols.")
-
-    def test_long_right_alternative(self):
-        self.grammar.rules = cnf_alternative.non_iso_term_elim_alternative(
-        										self.grammar.rules,
-                                    self.grammar.variables,
-                                    self.grammar.alphabet)[0]
-
-        print_grammar(self.grammar.rules)
-        shorted_e = cnf_alternative.long_right_alternative(self.grammar.rules)
-        for value in shorted_e.values():
-            for val in value:
-                amount_integers = len([key for key in shorted_e if len(key) > 1])
-                accepted_length = amount_integers + 2
-                self.assertLessEqual(len(val), accepted_length, ERRMSG_LONG_RIGHT)
-        print_grammar(shorted_e)
-        print("successfully eliminated_ long right sides for TEST_E: ")
-
-def print_grammar(rules):
-    for key, value in rules.items():
-        print('{key} --> {value}')
-    print("\n")
-
-
-if __name__ == '__main__':
-    unittest.main()
