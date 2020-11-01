@@ -1,9 +1,7 @@
-"""alternative cnf functions in case the alphabet runs out of symbols"""
 import string
 
 
 def non_iso_term_elim_alternative(rules, variables, alphabet):
-    """alternative version of elimination of non isolated terminal symbols"""
     alph = set(string.ascii_uppercase) - set(variables)
     length_difference = len(alphabet) - len(alph)
     alternate_alph = set(string.ascii_uppercase)
@@ -38,7 +36,6 @@ def non_iso_term_elim_alternative(rules, variables, alphabet):
 
 
 def long_right_alternative(rules):
-    """alternative method of eliminating long right sided rules"""
     alternate_keys = [list(key)[0] for key in rules.keys() if len(key) > 1]
     alph = set(string.ascii_uppercase) - set(alternate_keys)
     new_dict = dict()

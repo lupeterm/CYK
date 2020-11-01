@@ -1,4 +1,3 @@
-"""functions to bring grammar into CNF"""
 import string
 import cnf_test
 import cyk
@@ -6,7 +5,6 @@ import cnf_alternative
 
 
 def cnf(grammar):
-    """sequentially call distinct functions"""
     grammar.rules = epsilon_elim(grammar.start, grammar.rules)
     print("Occurrences of epsilon eliminated.")
     cnf_test.print_grammar(grammar.rules)
@@ -27,7 +25,6 @@ def cnf(grammar):
 
 
 def epsilon_elim(start, rules):
-    """eliminate epsilon"""
     eps = r'\E'
     eps_keys = cyk.check_rule(rules, eps)  # find occurrences of epsilon in rules
     if not eps_keys:
@@ -58,7 +55,6 @@ def epsilon_elim(start, rules):
 
 
 def chain_elim(rules):
-    """eliminate chained rules"""
     keys = []
     for key in rules.keys():
         keys.append(key)
@@ -74,7 +70,6 @@ def chain_elim(rules):
 
 # search rules for non-isolated terminal symbols (e.g. in the form of 'aa' or 'aA'...)
 def non_iso_term_elim(rules, variables, alphabet):
-    """eliminate non isolated terminal symbols"""
     alph = set(string.ascii_uppercase) - set(variables)
     new_dict = dict()
     if len(alphabet) > len(alph):
@@ -108,7 +103,6 @@ def non_iso_term_elim(rules, variables, alphabet):
 
 
 def long_right_elim(rules, alphabet):
-    """eliminate long right sides"""
     alph = set(string.ascii_uppercase) - set(key for key in rules)
     if len(alphabet) > len(alph):
         return cnf_alternative.long_right_alternative(rules)

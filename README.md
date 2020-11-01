@@ -45,7 +45,6 @@ This package takes a CF grammar G and a word w as an input, transforms G into Ch
 3. **Enter Word**
 
     → Enter the word, nothing fancy to it.
-    → spam `enter` until done.
 
 4. **Open PDF**
 

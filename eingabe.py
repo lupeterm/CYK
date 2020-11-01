@@ -1,9 +1,6 @@
-"""define input of CFG"""
 splitter = ['.', ';', '  ', ',', '|']
 
-
 def new_word():
-    """get word from user"""
     word = input("Please enter the word. \n")
     char_list = []
     for i in word:
@@ -12,7 +9,6 @@ def new_word():
 
 
 class CFG:
-    """Definition of context-free Grammar"""
 
     def __init__(self):
         self.variables = []
@@ -21,25 +17,20 @@ class CFG:
         self.start = None
 
     def set_variables(self, variables):
-        """set variables"""
         self.variables = variables
 
     def set_alphabet(self, alphabet):
-        """set alphabet"""
         self.alphabet = alphabet
 
     def set_rules(self, key, value):
-        """set rules"""
         if key not in self.rules:
             self.rules.update({key: set()})
         self.rules[key].add(value)
 
     def set_start(self, start):
-        """set starting symbol"""
         self.start = start
 
     def new_grammar(self):
-        """get grammar from user input"""
         var = input("Please enter all symbols.\n")
         for i in splitter:
             var = var.replace(i, ' ')
@@ -67,11 +58,10 @@ class CFG:
     def file_input(self):
         
         file = open(input("Enter filename you want to import.\n"), "r").read().splitlines()
-        #Remove Empty Lines from the list
         for i in file:
             if i == '':
                 file.remove(i)
-        #Extract the Terminal Symbols and the Alphabet from the file
+        
         for i in splitter:
             file[0] = file[0].replace(i, ' ')
             file[1] = file[1].replace(i, ' ')
@@ -80,7 +70,7 @@ class CFG:
 
         self.set_start(file[2])
         check_start(self.variables, self.start)
-        #delete the first three Elements from the List (Variables, Alphabet and Starting Symbol)
+
         del file[0:3]
 
         for rules in file:
@@ -97,7 +87,6 @@ class CFG:
 
 
 def check_syntax(variables, alphabet, rules):
-    """check input syntax"""
     lower = []
     upper = []
     for i in rules:
@@ -120,7 +109,6 @@ def check_syntax(variables, alphabet, rules):
 
 
 def check_start(variables, start):
-    """check if starting symbol is in grammar"""
     if start not in variables:
         print("The starting Symbol has to be part of the symbols. \n")
         raise SystemExit

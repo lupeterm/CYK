@@ -1,30 +1,22 @@
-"""format CYK table to LaTeX string"""
+
 from string import Template
 import tabulate
 
 
 def to_latex(table, word, start, rules, before):
-    """still formatting"""
 
-    # custom indices for table
     v_indices = [str(x + 1)for x in range(len(word))]
     h_indices = [word[x - 1] for x in range(1, len(word)+1)]
 
-    # import the template
     template = ''.join(open("latex_template.txt", "r").read().splitlines())
     latex_string = str(tabulate.tabulate(table,
                                          tablefmt="latex",
                                          showindex=iter(v_indices),
                                          headers=iter(h_indices)))
 
-    # conclusion and insertion of cyk table
-
-
-    # center columns
     latex_string = latex_string.replace(r'\begin{tabular}'r'{r' + ("l" * len(word)),
                                         r"\begin{tabular}{|r" + "|c" * len(word) + "|")
 
-    # cosmetics
     latex_string = latex_string.replace("['", r'\{')
     latex_string = latex_string.replace("']", r'\}')
     latex_string = latex_string.replace("', '", ", ")
@@ -42,7 +34,6 @@ def to_latex(table, word, start, rules, before):
     latex_string = latex_string.replace("\\E", "epsilon")
 
     return latex_string
-
 
 def grammar_to_latex(rules):
     table_string = ''
