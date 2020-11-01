@@ -18,30 +18,30 @@ The project was implemented by Simon Gustavs, Lukas Petermann and Undine Holst i
 \section{Modularization and project planning}
 For the CYK algorithm the grammar needs to be converted into Chomsky normal form(CNF). Therefore the first thing happening after the user enters the 
 grammar and the word, is the transformation of the grammar into CNF. After that the CYK algorithm can be 
-executed and the result will be put into a LaTeX and PDF file. Therefore the project was divided into four main parts plus the documentation.
+executed and the result will be put into a LaTeX and PDF file. Therefore the project was devided into four main parts plus the documentation.
 The main program parts are the input (implemented by Simon), the converting of the grammar into CNF (implemented by Lukas with help of Simon and Undine), 
 the CYK algorithm (implemented by Lukas) and the output (implemented by Lukas with help of Simon).
 This documentation was written by Undine Holst and the executability of this noweb documentation was ensured by Undine Holst with a helping hand from Simon Gustavs.
 The following code segments will have a comment by whom they were written.
 
 \section{Usage}
-Windows user will have to install MikTex (https://miktex.org/download) to ensure the output of the result in the PDF.
+Windows user will have to install MikTeX (https://miktex.org/download) to ensure the output of the result in the PDF.
 To use the program the program main.py must be executed via an IDE, editor or the command line using the 
 command 'python3 main.py'. Then the grammar members need to be imported from an external file or defined in the command line using the following syntax:
 \newline
-\newline Symbols are represented by upper case letters and they are divided by commas, semicolons, spaces, dots or pipes. 
+\newline Symbols are represented by upper case letters and they are devided by commas, semicolons, spaces, dots or pipes. 
 For the output the symbols will be framed by curly brackets. 
 \newline E.g.: In: 'A,B,C' Out: '\{A,B,C\}'
 \newline	Terminal Symbols are represented by lower case letters and are put in and out the same way as symbols.
 \newline E.g.: In: 'a,b,c' Out: '\{a,b,c\}'
-\newline	For each Symbol (e.g. A) there will be rules required. Those are also divided by commas. 
+\newline	For each Symbol (e.g. A) there will be rules required. Those are also devided by commas. 
 \newline E.g.: If A can be turned into B, a or epsilon: In: A: 'B, a, \textbackslash E' Out: '\{A -$>$ B,a,\textbackslash E\}'
 \newline	The starting symbol has to be one of the symbols(upper case). 
 And note that epsilon has to be written as '\textbackslash E'.
 \newline
 \newline If the input is realized through an external file that file needs to be structured as follows:
-\newline The first filed line needs to contain all variables represented by upper case letters divided by any of the allowed splitting symbols. 
-\newline The second filled line needs to contain the alphabet represented by lower case letters also divided by any of the allowed splitting symbols.
+\newline The first filed line needs to contain all variables represented by upper case letters devided by any of the allowed splitting symbols. 
+\newline The second filled line needs to contain the alphabet represented by lower case letters also devided by any of the allowed splitting symbols.
 \newline The third filled line has to contain the starting symbol which must be part of the variables.
 \newline The following non-empty lines must contain the rules for each variable. The first character of the lines for the rules needs to be the variable for that 
 the rules of this line apply. For better clarity next an arrow like this '-$>$' may be used to differentiate between the key variable and the rules. Then the rules need 
@@ -82,7 +82,7 @@ import copy
 <<execcyk>>
 
 @
-First the needed files are imported. Then a function to call the subprocess for carrying out the converting of the the LaTeX
+First the needed files are imported. Then a function to call the subprocess for carrying out the converting of the LaTeX
  file into a PDF file is defined.
 <<runpdflatex>>=
 #Lukas
@@ -139,7 +139,7 @@ print('\noutput saved to CYK_Tableau.pdf')
 @
 \section{Input}
 Through the input a context free grammar and a word to be tested of being part of the grammar are entered. 
-First of all a list with splitting symbols is defined in order to be able to differentiate different symbols.
+First of all a list with splitting symbols is defined in order to be able to differentiate between different symbols.
 <<eingabe>>=
 #Simon
 splitter = ['.', ';', '  ', ',', '|']
@@ -197,11 +197,11 @@ class CFG:
 @
 Following these definitions the user input via command line is implemented.
 First the user is asked to enter all variables respectively symbols and then all splitting symbols in the string are replaced 
-by space. The string is then converted into a list by turning the string parts, divided by space, into list members. 
+by space. The string is then converted into a list by turning the string parts, devided by space, into list members. 
 Afterwards that list is assigned as the variables of the grammar. Then the terminal symbols 
 respectively the alphabet are inquired from the user. After replacing all splitting symbols with space the string is turned into a list again and 
 assigned as the alphabet of the grammar. The rules for each variable are then inquired from the user. After replacing the 
-splitting symbols with space and turning the string into a list, the function for checking the syntax is called. If the syntax is fine the sets of keys and
+splitting symbols with space and turning the string into a list the function for checking the syntax is called. If the syntax is fine the sets of keys and
  values are assigned as the rules of the grammar. After that the start variable is inquired from the user and is tested to 
  be part of the variables.
 <<ngrammar>>=
@@ -276,7 +276,7 @@ do follow the syntax the rules are assigned to the grammar.
                 self.set_rules(nterminal, k)
 
 @
-The syntax of the grammar needs to be checked for the program to work. Therefore the variables from the input are divided 
+The syntax of the grammar needs to be checked for the program to work. Therefore the variables from the input are devided 
 into upper and lower case variables. Then for each lower and upper case variable it is checked whether they are part of the 
 alphabet respectively the variables. If not then an error message will be displayed.
 <<csyntax>>=
@@ -357,7 +357,7 @@ saved as '\textbackslash E'. Next all keys of rules that point to epsilon are no
 considered for the epsilon elimination. If there are no rules containing epsilon the rules will be returned without changing. 
 Otherwise the program will go on and iterate through the values for each key. All values that include epsilon keys will be 
 saved to tmp\_key. Then new rules will be added to the values of the current key after being created by removing characters from the old values. 
-If there are empty rules, those will be replaced by the notation '\textbacklslash E'. Then all epsilons ('\textbackslash E') will be removed from the 
+If there are empty rules, those will be replaced by the notation '\textbackslash E'. Then all epsilons ('\textbackslash E') will be removed from the 
 epsilon key rules. If there are still epsilons left in other rules, those will be added as new epsilon rules and the whole function will be started all 
 over. That will also happen if there is just one epsilon rule left that is not pointing from the start symbol to the empty word. If the function does 
 not need to be started over the changed rules are returned.
@@ -669,7 +669,7 @@ def matrixmult(rules, lhs, rhs):
     return nonterminals_flatted
 
 @    
-\section{Output as PDF via LaTex}
+\section{Output as PDF via LaTeX}
 After the result has been processed it still needs to be put out in a graphic way so that 
 the user is able to understand the process of the algorithm. Therefore the result needs to 
 be converted into a text that LaTex can handle and convert into a PDF. So this function 
