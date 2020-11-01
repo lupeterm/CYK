@@ -55,9 +55,7 @@ def epsilon_elim(start, rules):
 
 
 def chain_elim(rules):
-    keys = []
-    for key in rules.keys():
-        keys.append(key)
+    keys = rules.keys()
     new_dict = {}
     for key in list(keys):
         new_dict.update({key: rules[key]})
