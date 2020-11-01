@@ -1,5 +1,5 @@
 def check_rule(rules, rhs):
-    symbols = [key for key, value in rules.items() if rhs in value]  # or rhs[::1] in value
+    symbols = [key for key, value in rules.items() if rhs in value]
     return symbols
 
 
@@ -17,8 +17,6 @@ def matrixmult(rules, lhs, rhs):
         non_terminals_right.append(rhs[2:])
     else:
         non_terminals_right = rhs
-
-    # AA A1B AB1 A1B1
 
     for nterms_left in non_terminals_left:
         for nterms_right in non_terminals_right:
