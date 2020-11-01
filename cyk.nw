@@ -1,13 +1,28 @@
+\begin{titlepage}
 \title{Automatic execution of the CYK algorithm}
 \author{by Simon Gustavs, Lukas Petermann and Undine Holst}
+\date{\today}
+\maketitle
+\thispagestyle{empty}
+\end{titlepage}
+
+\tableofcontents
+\newpage
 
 \section{Introduction}
 The CYK algorithm was created by John Cocke, Daniel Younger and Tadao Kasami to determine wether 
-a word is part of a particular context free grammar or not. The grammar needs to be in Chomsky normal 
-form(CNF) to be tested by the CYK algorithm. Therefore the first thing happening after the user enters the 
+a word is part of a particular context free grammar or not. In this project the goal was to create a program that 
+can give a visual presentation of this algorithm and its result in from of a table for the input of any context free grammar and word.
+The project was implemented by Simon Gustavs, Lukas Petermann and Undine Holst in the supervision of Prof. Schirra from the Otto-von-Guericke university Magdeburg.
+
+\section{Modularization and project planning}
+For the CYK algorithm the grammar needs to be converted into Chomsky normal form(CNF). Therefore the first thing happening after the user enters the 
 grammar and the word, is the transformation of the grammar into CNF. After that the CYK algorithm can be 
-executed and the result will be put into a LaTeX and PDF file. The following code segments will have a comment by whom they were written.
-This documentation was written by Undine Holst. The executability of this noweb documentation was ensured by Undine Holst with a helping hand from Simon Gustavs.
+executed and the result will be put into a LaTeX and PDF file. Therefore the project was divided into four main parts plus the documentation.
+The main program parts are the input (implemented by Simon), the converting of the grammar into CNF (implemented by Lukas with help of Simon and Undine), 
+the CYK algorithm (implemented by Lukas) and the output (implemented by Lukas with help of Simon).
+This documentation was written by Undine Holst and the executability of this noweb documentation was ensured by Undine Holst with a helping hand from Simon Gustavs.
+The following code segments will have a comment by whom they were written.
 
 \section{Usage}
 Windows user will have to install MikTex (https://miktex.org/download) to ensure the output of the result in the PDF.
@@ -79,7 +94,6 @@ when needed. Since the grammar is a set it is just printed like follows:
 <<printgrammar>>=
 #Lukas
 def print_grammar(rules):
-    """pretty print grammar"""
     for key, value in rules.items():
         print(f'{key} --> {value}')
     print("\n")
@@ -360,7 +374,7 @@ def epsilon_elim(start, rules):
         for val in value:
             tmp_key.update(char for char in eps_keys if char in val)
             tmp_rule.update(val.replace(char, "") for char in tmp_key 
-            								for val in value if char in val)  
+            		for val in value if char in val)  
         value.update(tmp_rule)
     for key, values in rules.items():
         tmpval = values.copy()
@@ -414,7 +428,7 @@ def non_iso_term_elim(rules, variables, alphabet):
     new_dict = dict()
     if len(alphabet) > len(alph):
         return non_iso_term_elim_alternative(rules, variables, 
-        																			alphabet)
+        		alphabet)
     map_term_not_term = [(char, symbol) for char, symbol
                          in zip(alphabet, alph)]
     for keys, values in rules.items():
@@ -428,7 +442,6 @@ def non_iso_term_elim(rules, variables, alphabet):
                     new_dict[term[1]] = set(term[0])
             tmp_val.remove(val)
             tmp_val.add(tmp_str)
-
         new_dict[keys].update(tmp_val)
     for value in new_dict.values():
         for strings in value:
