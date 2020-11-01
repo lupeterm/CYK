@@ -356,9 +356,9 @@ For the elimination of rules pointing to epsilon respectively the empty word fir
 saved as '\textbackslash E'. Next all keys of rules that point to epsilon are noted so that only epsilon rules will be 
 considered for the epsilon elimination. If there are no rules containing epsilon the rules will be returned without changing. 
 Otherwise the program will go on and iterate through the values for each key. All values that include epsilon keys will be 
-saved to tmp\_key. Then new rules will be added to the values of the current key after being created by removing characters from the old values. 
+saved to tmp\_key. Then new rules will be added to the values of the current key after being created by removing characters (the epsilon keys) from the old values. 
 If there are empty rules, those will be replaced by the notation '\textbackslash E'. Then all epsilons ('\textbackslash E') will be removed from the 
-epsilon key rules. If there are still epsilons left in other rules, those will be added as new epsilon rules and the whole function will be started all 
+old epsilon key rules. If there are still epsilons left in other rules, those will be added as new epsilon rules and the whole function will be started all 
 over. That will also happen if there is just one epsilon rule left that is not pointing from the start symbol to the empty word. If the function does 
 not need to be started over the changed rules are returned.
 <<epsilonelim>>=
