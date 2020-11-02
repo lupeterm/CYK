@@ -473,7 +473,7 @@ class TestCasesAlternative(unittest.TestCase):
 
 def print_grammar(rules):
     for key, value in rules.items():
-        print(f'{key} --> {value}')
+        print( key +' --> ' + value)
     print("\n")
 
 

@@ -38,7 +38,7 @@ def to_latex(table, word, start, rules, before):
 def grammar_to_latex(rules):
     table_string = ''
     for key, values in rules.items():
-        table_string = table_string + f'{key} & \\rightarrow & {values} \\\ \n'
+        table_string = table_string + key +' & \\rightarrow & '+values +' \\\ \n'
     table_string = table_string.replace("'", "")
     table_string = table_string.replace(', ', ' \\mid ')
     table_string = table_string.replace('}', '')
