@@ -71,3 +71,4 @@ Next Steps:
 - implement a desktop UI (because why not)
 - maybe implement picture/screenshot input support? 
 - maybe implement visitor pattern
+- create PD automata from new rules and visualize it
