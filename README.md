@@ -70,3 +70,4 @@ Next Steps:
 - implement elimination of starting symbol from right sides.
 - implement a desktop UI (because why not)
 - maybe implement picture/screenshot input support? 
+- maybe implement visitor pattern
