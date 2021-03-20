@@ -67,8 +67,7 @@ Example
 Next Steps:
 ---
 
-- implement elimination of starting symbol from right sides.
+- implement elimination of starting symbol from right sides. :heavy_check_mark:
 - implement a desktop UI (because why not)
 - maybe implement picture/screenshot input support? 
-- maybe implement visitor pattern
 - create PD automata from new rules and visualize it
