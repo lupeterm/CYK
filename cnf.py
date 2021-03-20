@@ -5,6 +5,9 @@ import cnf_alternative
 
 
 def cnf(grammar):
+    grammar.rules = start_elim(grammar.start, grammar.rules, grammar.variables)
+    print('Occurrences of starting symbol on right sides eliminated')
+    cnf_test.print_grammar(grammar.rules)
     grammar.rules = epsilon_elim(grammar.start, grammar.rules)
     print("Occurrences of epsilon eliminated.")
     cnf_test.print_grammar(grammar.rules)
@@ -23,6 +26,23 @@ def cnf(grammar):
     cnf_test.print_grammar(grammar.rules)
     return grammar.rules
 
+
+def start_elim(start, rules, variables):
+    """
+    since we would like to keep the original starting symbol, insert a new nonterminal between S and further rules
+    S -> new_key
+    new_key -> [S_rules]
+    also replace all occurrences of S in right hand sides with new_key
+    """
+    new_key = set(set(string.ascii_uppercase) - set(variables)).pop()
+    print(new_key)
+    rules[new_key] = rules[start].copy()
+    rules[start] = set(new_key)
+    for values in rules.values():
+        for value in values:
+            if start in value:
+                value.replace(start, new_key)
+    return rules
 
 def epsilon_elim(start, rules):
     eps = r'\E'
