@@ -10,7 +10,8 @@ This package takes a CF grammar G and a word w as an input, transforms G into Ch
 ## Usage
 
 1. **Requirements**
-    → Windows user (my condolences) need to download and install [miktex](https://miktex.org/download).
+   
+   → Windows user (my condolences) need to download and install [miktex](https://miktex.org/download).
     
 2. **Execute Program** 
 
