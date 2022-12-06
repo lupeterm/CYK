@@ -36,10 +36,11 @@ def start_elim(start, rules, variables):
     """
     if start not in variables:
         raise KeyError(f'{start} must be a variable!')
+        exit(1)
     new_key = set(set(string.ascii_uppercase) - set(variables)).pop()
-    print(new_key)
-    rules[new_key] = rules[start].copy()
-    rules[start] = set(new_key)
+    print(f'creating new rule {new_key} -> [{start}]')
+    rules[new_key] = {f'{start}'}
+    # rules[start] = set(new_key)
     for values in rules.values():
         for value in values:
             if start in value:
