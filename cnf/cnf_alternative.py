@@ -1,17 +1,19 @@
 import string
 
-
+# what in the jesus buttermilk fuck is this
 def non_iso_term_elim_alternative(rules, variables, alphabet):
     alph = set(string.ascii_uppercase) - set(variables)
     length_difference = len(alphabet) - len(alph)
+
     alternate_alph = set(string.ascii_uppercase)
     needed_symbols = [alternate_alph.pop() for _ in range(int(length_difference / 10) + 1)]
-    new_dict = dict()
+    new_dict = {}
+
     for symbol in needed_symbols:
         for diff in range(length_difference):
             alph.add(symbol + str(diff))
-    map_term_not_term = [(char, symbol) for char, symbol
-                         in zip(alphabet, alph)]
+
+    map_term_not_term = [(char, symbol) for char, symbol in zip(alphabet, alph)]
     for keys, set_of_strings in rules.items():
         new_dict[keys] = set()
         set_copy = set_of_strings.copy()
@@ -25,7 +27,7 @@ def non_iso_term_elim_alternative(rules, variables, alphabet):
             set_copy.add(string_copy)
 
         new_dict[keys].update(set_copy)
-    repeat = False
+
     for set_of_strings in new_dict.values():  # make sure it worked, reiterate if needed
         for strings in set_of_strings:
             if len(strings) > 1 and (set(strings) & set(alphabet)):
@@ -38,14 +40,15 @@ def non_iso_term_elim_alternative(rules, variables, alphabet):
 def long_right_alternative(rules):
     alternate_keys = [list(key)[0] for key in rules.keys() if len(key) > 1]
     alph = set(string.ascii_uppercase) - set(alternate_keys)
-    new_dict = dict()
+
+    new_dict = {}
     am_new_keys = 0
-    new_key = alph.pop()+str(am_new_keys)
+
+    new_key = alph.pop() + str(am_new_keys)
     for key, set_of_strings in rules.items():
         new_dict[key] = set_of_strings.copy()
         for strings in set_of_strings:
-            amount_integers = len([num for num in [char for char in strings]
-                                   if num not in string.ascii_uppercase])
+            amount_integers = len([num for num in [char for char in strings] if num not in string.ascii_uppercase])
             if len(strings) - amount_integers > 2:
                 string_copy = strings
                 length = 0
@@ -58,12 +61,14 @@ def long_right_alternative(rules):
                         continue
                     new_val = char + new_val
                     length += 1
+
                 am_new_keys += 1
                 if am_new_keys > 9:
                     new_key = alph.pop()
                     am_new_keys = 0
                 if len(new_key) > 1:
                     new_key = ''.join(list(new_key)[:-1]) + str(am_new_keys)
+                    
                 string_copy = string_copy[:-len(new_val)] + new_key
                 new_dict[key].remove(strings)
                 new_dict[key].add(string_copy)

@@ -1,29 +1,26 @@
-import random
-import string
 import unittest
-import cnf
-import cnf_alternative
-import eingabe
-import cyk
-import tabular
+import cnf.cnf as cnf
+import cnf.cnf_alternative as cnf_alternative
+import cfg_input
+import cyk.cyk as cyk
 
 ERRMSG_ELIM = r'something went wrong: unexpected occurrence of \E.'
 ERRMSG_NON_ISO = "something went wrong: unexpected occurrence of terminal symbol."
-ERRMSG_LONG_RIGHT = "something went wrong: expected length was <3."
+ERRMSG_LONG_RIGHT = "something went wrong: expected length was < 3."
 ERRMSG_CHAIN = "something went wrong: unexpected single non-terminal symbol."
 
 
 class TestCasesA(unittest.TestCase):
 
     def setUp(self) -> None:
-        self.grammar = eingabe.CFG()
+        self.grammar = cfg_input.CFG()
         self.grammar.rules = {
             'S': {'ASA', 'aB'},
             'A': {'B', 'S'},
             'B': {'b', r'\E'}
         }
-        self.grammar.alphabet = {'a', 'b'}
-        self.grammar.variables = set(key for key in self.grammar.rules)
+        self.grammar.alphabet = ['a', 'b']
+        self.grammar.variables = list(set(key for key in self.grammar.rules))
         self.grammar.start = 'S'
         print_grammar(self.grammar.rules)
 
@@ -32,7 +29,7 @@ class TestCasesA(unittest.TestCase):
         for key, val in self.grammar.rules.items():
             if key is not self.grammar.start:
                 self.assertNotIn(r'\E', val, ERRMSG_ELIM)
-        print("eliminated_ all occurrences of epsilon:")
+        print("Eliminated all occurrences of epsilon:")
         print_grammar(self.grammar.rules)
 
     def test_elim_chains(self):
@@ -40,11 +37,11 @@ class TestCasesA(unittest.TestCase):
         for values in eliminated_a.values():
             for val in values:
                 self.assertFalse(val.isupper() and len(val) == 1, ERRMSG_CHAIN)
-        print("eliminated_ all occurrences of chained rules:")
+        print("Eliminated all occurrences of chained rules:")
         print_grammar(eliminated_a)
 
     def test_elim_nonisoterm(self):
-        self.grammar.rules = cnf.non_iso_term_elim(
+        self.grammar.rules, _ = cnf.non_iso_term_elim(
             self.grammar.rules, self.grammar.variables, self.grammar.alphabet
         )
         if isinstance(self.grammar.rules, tuple):
@@ -56,7 +53,7 @@ class TestCasesA(unittest.TestCase):
         print("Successfully eliminated_ all occurrences of non-isolated terminal symbols.")
 
     def test_elim_long_right(self):
-        self.grammar.rules = cnf.cnf(self.grammar)
+        self.grammar.rules = cnf.transform_to_cnf(self.grammar)
         print_grammar(self.grammar.rules)
         for value in self.grammar.rules.values():
             for val in value:
@@ -68,15 +65,15 @@ class TestCasesA(unittest.TestCase):
 class TestCasesB(unittest.TestCase):
 
     def setUp(self):
-        self.grammar = eingabe.CFG()
+        self.grammar = cfg_input.CFG()
         self.grammar.rules = {
             'S': {'TU'},
             'T': {'aTb', r'\E'},
             'U': {'R'},
             'R': {'Ucc', r'\E'}
         }
-        self.grammar.alphabet = {'a', 'b', 'c'}
-        self.grammar.variables = set(key for key in self.grammar.rules)
+        self.grammar.alphabet = ['a', 'b', 'c']
+        self.grammar.variables = list(set(key for key in self.grammar.rules))
         self.grammar.start = 'S'
         print_grammar(self.grammar.rules)
 
@@ -118,7 +115,7 @@ class TestCasesB(unittest.TestCase):
         print("Successfully eliminated_ all occurrences of non-isolated terminal symbols.")
 
     def test_elim_long_right(self):
-        shorted_b = cnf.cnf(self.grammar)
+        shorted_b = cnf.transform_to_cnf(self.grammar)
         for value in shorted_b.values():
             for val in value:
                 self.assertIsNot(len(val), 3 or 4 or 5, ERRMSG_LONG_RIGHT)
@@ -129,14 +126,14 @@ class TestCasesB(unittest.TestCase):
 class TestCasesC(unittest.TestCase):
 
     def setUp(self):
-        self.grammar = eingabe.CFG()
+        self.grammar = cfg_input.CFG()
         self.grammar.rules = {
             'S': {'ASA', 'BSB', r'\E'},
             'A': {'a'},
             'B': {'b'}
         }
-        self.grammar.alphabet = {'a', 'b'}
-        self.grammar.variables = set(key for key in self.grammar.rules)
+        self.grammar.alphabet = ['a', 'b']
+        self.grammar.variables = list(set(key for key in self.grammar.rules))
         self.grammar.start = 'S'
         print_grammar(self.grammar.rules)
 
@@ -189,7 +186,7 @@ class TestCasesC(unittest.TestCase):
 class TestCasesD(unittest.TestCase):
 
     def setUp(self):
-        self.grammar = eingabe.CFG()
+        self.grammar = cfg_input.CFG()
         self.grammar.rules = {
             'S': {'LR', r'\E'},
             'L': {'ALLA', 'BLLB', r'\E'},
@@ -197,8 +194,8 @@ class TestCasesD(unittest.TestCase):
             'A': {'a'},
             'B': {'b'}
         }
-        self.grammar.alphabet = {'a', 'b'}
-        self.grammar.variables = set(key for key in self.grammar.rules)
+        self.grammar.alphabet = ['a', 'b']
+        self.grammar.variables = list(set(key for key in self.grammar.rules))
         self.grammar.start = 'S'
         print_grammar(self.grammar.rules)
 
@@ -243,7 +240,7 @@ class TestCasesD(unittest.TestCase):
         print_grammar(self.grammar.rules)
         self.grammar.rules = cnf.chain_elim(self.grammar.rules)
         print_grammar(self.grammar.rules)
-        self.grammar.rules = cnf.non_iso_term_elim(
+        self.grammar.rules, _ = cnf.non_iso_term_elim(
             self.grammar.rules, self.grammar.variables, self.grammar.alphabet
         )
         if isinstance(self.grammar.rules, tuple):
@@ -265,14 +262,14 @@ class TestCasesD(unittest.TestCase):
 class TestCasesE(unittest.TestCase):
 
     def setUp(self):
-        self.grammar = eingabe.CFG()
+        self.grammar = cfg_input.CFG()
         self.grammar.rules = {
             'S': {'aaA'},
             'A': {'BAB', 'B', r'\E'},
             'B': {'bb'}
         }
-        self.grammar.alphabet = {'a', 'b'}
-        self.grammar.variables = set(key for key in self.grammar.rules)
+        self.grammar.alphabet = ['a', 'b']
+        self.grammar.variables = list(set(key for key in self.grammar.rules))
         self.grammar.start = 'S'
         print("grammar:")
         print_grammar(self.grammar.rules)
@@ -314,7 +311,7 @@ class TestCasesE(unittest.TestCase):
         print("Successfully eliminated_ all occurrences of non-isolated terminal symbols.")
 
     def test_elim_long_right(self):
-        self.grammar.rules = cnf.non_iso_term_elim(
+        self.grammar.rules, _ = cnf.non_iso_term_elim(
             self.grammar.rules, self.grammar.variables, self.grammar.alphabet
         )
         if isinstance(self.grammar.rules, tuple):
@@ -337,7 +334,7 @@ class TestCasesE(unittest.TestCase):
 class TestCasesAlternative(unittest.TestCase):
 
     def setUp(self):
-        self.grammar = eingabe.CFG()
+        self.grammar = cfg_input.CFG()
         self.grammar.rules = {
             "A": {"aBcD", "a"},
             "B": {"aBcD", "a"},
@@ -366,8 +363,8 @@ class TestCasesAlternative(unittest.TestCase):
             "Y": {"aBcD", "a"},
             "Z": {"aBcD", "a"}
         }
-        self.grammar.alphabet = {'a', 'c'}
-        self.grammar.variables = set(key for key in self.grammar.rules)
+        self.grammar.alphabet = ['a', 'c']
+        self.grammar.variables = list(set(key for key in self.grammar.rules))
         self.grammar.start = 'S'
         print("grammar:")
         print_grammar(self.grammar.rules)
