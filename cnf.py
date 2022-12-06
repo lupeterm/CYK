@@ -34,6 +34,8 @@ def start_elim(start, rules, variables):
     new_key -> [S_rules]
     also replace all occurrences of S in right hand sides with new_key
     """
+    if start not in variables:
+        raise KeyError(f'{start} must be a variable!')
     new_key = set(set(string.ascii_uppercase) - set(variables)).pop()
     print(new_key)
     rules[new_key] = rules[start].copy()
