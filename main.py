@@ -1,3 +1,4 @@
+from argparse import ArgumentParser
 import subprocess
 import cfg_input
 import cyk.cyk as cyk
@@ -13,11 +14,26 @@ def run_pdflatex(file_name: str = "CYK_Tableau.tex", path: str = "."):
     """
     return subprocess.call(['pdflatex', file_name], cwd=path)
 
-def main(): 
+
+if __name__ == '__main__':
+    parser = ArgumentParser('CYK')
+    parser.add_argument('-f', '--grammar-file', type=str,
+                        help='specifies the path to the context-free grammar to transform.')
+    parser.add_argument('-l', '--latex', action='store_true',
+                        help='set to enable latex output.')
+    parser.add_argument('-m', '--markdown', action='store_true',
+                        help='set to enable markdown output.')
+    parser.add_argument('-o', '--output-name', type=str,
+                        help='specifies the name prefix for resulting files.')
+    args = parser.parse_args()
+
+    if not (file_input := args.grammar_file):
+        specify_manual = input('No file input given. Do you want to specify the grammar yourself? [Y/n]')
+
     grammar = cfg_input.CFG()
 
-    if input("Do you want to import your grammar? [y/N] ") in ['Y', 'y']:
-        grammar.file_input()
+    if file_input:
+        grammar.file_input(file_input)
     else:
         grammar.new_grammar()
 
@@ -32,19 +48,27 @@ def main():
     cnf_test.print_grammar(grammar.rules)
     table = cyk.cyk(grammar, word)
 
-    if input("Do you want to export your table as markdown or LaTeX? [M/L] ") in ['L']:
-        tableau = tabular.to_latex(table, word, grammar.start, grammar.rules, grammar_copy)
-        with open(file = "CYK_Tableau.tex", mode = "w") as file:
+    if not (args.latex or args.markdown):
+        print('No output format specified!')
+        output_options = input('Specify: [L]atex, [M]arkdown, or [B]oth: [L/M/B]')
+        if 'B' in output_options:
+            args.latex = True
+            args.markdown = True
+        elif 'L' in output_options:
+            args.latex = True
+        else:
+            args.markdown = True
+
+    if args.latex:
+        tableau = tabular.to_latex(
+            table, word, grammar.start, grammar.rules, grammar_copy)
+        with open(file="CYK_Tableau.tex", mode="w") as file:
             file.write(tableau)
             print(f"\nWritten output to {file.name}")
             run_pdflatex()
             print("\nOutput saved to CYK_Tableau.pdf")
-    else:
+    if args.markdown:
         tableau = tabular.to_markdown(table, word, grammar.start)
-        with open(file = "CYK_Tableau.md", mode = "w") as file:
+        with open(file="CYK_Tableau.md", mode="w") as file:
             file.write(tableau)
             print(f"\nWritten output to {file.name}")
-
-
-if __name__ == "__main__":
-    main()

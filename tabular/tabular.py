@@ -22,7 +22,7 @@ def to_latex(table, word, start, rules, before) -> str:
     v_indices = [str(x + 1) for x in range(len(word))]
     h_indices = [word[x - 1] for x in range(1, len(word)+1)]
 
-    template = ''.join(open("../templates/latex_template.txt", "r").read().splitlines())
+    template = ''.join(open("templates/latex_template.txt", "r").read().splitlines())
     latex_string = str(tabulate.tabulate(table,
                                          tablefmt="latex",
                                          showindex=iter(v_indices),
