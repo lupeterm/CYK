@@ -1,10 +1,13 @@
-def check_rule(rules, rhs):
+from typing import Literal, Dict, List
+
+
+def check_rule(rules: Dict[str, List[str]], rhs: str) -> List[str]:
     symbols = [key for key, value in rules.items() if rhs in value]
     return symbols
 
 
-def matrixmult(rules, lhs, rhs):
-    non_terminals = []
+def matrixmult(rules, lhs, rhs) -> List[str]:
+    non_terminals: List[List[str]] = []
     non_terminals_left = list()
     non_terminals_right = list()
     if len(lhs) > 2 and lhs[1].isnumeric():
@@ -21,16 +24,16 @@ def matrixmult(rules, lhs, rhs):
     for nterms_left in non_terminals_left:
         for nterms_right in non_terminals_right:
             non_terminals.append(check_rule(rules, nterms_left + nterms_right))
-    nonterminals_flatted = [x for inner in non_terminals for x in inner]
+    nonterminals_flatted: List[str] = [x for inner in non_terminals for x in inner]
     return nonterminals_flatted
 
 
-def cyk(grammar, word):
-    tableau = []
+def cyk(grammar, word)->List[List[str]]:
+    tableau: List[List] = []
     word_length = len(word)
-    for i in range(0, word_length):
+    for i, char in enumerate(word):
         tableau.append([""] * word_length)
-        tableau[i][i] = [x for x in check_rule(grammar.rules, word[i])]
+        tableau[i][i] = check_rule(grammar.rules, char)
 
     for s in range(1, word_length):
         for i in range(1, word_length - s + 1):
@@ -39,5 +42,5 @@ def cyk(grammar, word):
                 horizontal = tableau[i - 1][k - 1]
                 vertical = tableau[k][i + s - 1]
                 result += (matrixmult(grammar.rules, horizontal, vertical))
-            tableau[i - 1][i + s - 1] = list(dict.fromkeys(result))
+            tableau[i - 1][i + s - 1] = result
     return tableau
