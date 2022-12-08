@@ -1,8 +1,7 @@
 import unittest
-import cnf.cnf as cnf
-import cnf.cnf_alternative as cnf_alternative
+from cnf import cnf, cnf_alternative
 import cfg_input
-import cyk.cyk as cyk
+from cyk import check_rule
 
 ERRMSG_ELIM = r'something went wrong: unexpected occurrence of \E.'
 ERRMSG_NON_ISO = "something went wrong: unexpected occurrence of terminal symbol."
@@ -80,7 +79,7 @@ class TestCasesB(unittest.TestCase):
     def test_epsilon_elim(self):
 
         self.grammar.rules = cnf.epsilon_elim(self.grammar.start, self.grammar.rules)
-        eps_keys = cyk.check_rule(self.grammar.rules, r'\E')
+        eps_keys = check_rule(self.grammar.rules, r'\E')
         self.assertLessEqual(len(eps_keys), 1)
         if len(eps_keys) == 1:
             self.assertIn(self.grammar.start, eps_keys)

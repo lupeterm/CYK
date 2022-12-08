@@ -1,7 +1,6 @@
 import string
-import cnf.cnf_test as cnf_test
-import cyk.cyk as cyk
-import cnf.cnf_alternative as cnf_alternative
+from cyk import check_rule
+from cnf import cnf_alternative, cnf_test
 
 
 def transform_to_cnf(grammar):
@@ -57,7 +56,7 @@ def start_elim(start: str, rules, variables):
 
 def epsilon_elim(start: str, rules):
     eps = r'\E'
-    eps_keys = cyk.check_rule(rules, eps)  # find occurrences of epsilon in rules
+    eps_keys = check_rule(rules, eps)  # find occurrences of epsilon in rules
 
     if not eps_keys:
         return rules
@@ -84,7 +83,7 @@ def epsilon_elim(start: str, rules):
     for key in eps_keys:
         rules[key].remove(r'\E')
 
-    eps_keys = cyk.check_rule(rules, eps)
+    eps_keys = check_rule(rules, eps)
     if len(eps_keys) > 1 or not (len(eps_keys) == 1 and start in eps_keys):
         return epsilon_elim(start, rules)
 
@@ -97,7 +96,7 @@ def chain_elim(rules):
 
     for key in list(keys):
         new_dict.update({key: rules[key]})
-        new_keys = cyk.check_rule(rules, key)  # get vars that point to singular variables
+        new_keys = check_rule(rules, key)  # get vars that point to singular variables
         for k in new_keys:  # substitute rules of V on rhs with V itself
             rules[k].update(rules[key])
             rules[k].remove(key)
