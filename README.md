@@ -13,11 +13,15 @@ This package takes a CF grammar $G$ and a word $w$ as an input, transforms $G$ i
    
    - Windows user (my condolences) need to download and install [miktex](https://miktex.org/download).
     
-2. **Execute Program** 
+2. **Installation**
 
-    - Execute from command line using `python3 main.py` or execute `main.py` using your favourite IDE or text editor.
+    - Inside a virtual environment, simply run `pip install -e .`.
 
-3. **Enter Grammar**
+3. **Execute Program** 
+
+    - Call the module directly via `cyk`. Run with `--help` to see available options. 
+
+4. **Enter Grammar**
 
     - Enter the members of the grammar in order with following syntax:
         

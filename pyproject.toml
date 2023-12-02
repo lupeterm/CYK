@@ -1,0 +1,15 @@
+[project]
+name = "cyk"
+description = "CYK Parsing Algorithm."
+version = "1.0.0"
+authors = [
+    { name = "Lukas Petermann", email = "lukas.petermann13@gmail.com" }
+]
+dependencies = [
+    "tabulate"
+]
+
+[project.scripts]
+cyk = "cyk.main:main"
+
+[project.optional-dependencies]

@@ -1,6 +1,6 @@
 import string
-from cyk import check_rule
-from cnf import cnf_alternative, cnf_test
+from cyk.core.cyk import check_rule
+from . import cnf_alternative, cnf_test
 
 
 def transform_to_cnf(grammar):

@@ -1,9 +1,9 @@
 from argparse import ArgumentParser
 import subprocess
-import cfg_input
-from cyk import cyk
-from output_cyk import create_output
-from cnf import cnf_test, cnf_alternative, cnf
+import cyk.cfg_input
+from .core import cyk
+from .output_cyk import create_output
+from .cnf import cnf_test, cnf_alternative, cnf
 import copy
 
 
@@ -13,8 +13,7 @@ def run_pdflatex(file_name: str = "CYK_Tableau.tex", path: str = "."):
     """
     return subprocess.call(['pdflatex', file_name], cwd=path)
 
-
-if __name__ == '__main__':
+def main():
     parser = ArgumentParser('CYK')
     parser.add_argument('-f', '--grammar-file', type=str,
                         help='specifies the path to the context-free grammar to transform.')
@@ -76,3 +75,6 @@ if __name__ == '__main__':
         with open(file="CYK_Tableau.md", mode="w") as file:
             file.write(tableau)
             print(f"\nWritten output to {file.name}")
+
+if __name__ == '__main__':
+    main()

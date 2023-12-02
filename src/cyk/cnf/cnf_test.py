@@ -1,7 +1,7 @@
 import unittest
-from cnf import cnf, cnf_alternative
-import cfg_input
-from cyk import check_rule
+from . import cnf, cnf_alternative
+import cyk.cfg_input
+from cyk.core.cyk import check_rule
 
 ERRMSG_ELIM = r'something went wrong: unexpected occurrence of \E.'
 ERRMSG_NON_ISO = "something went wrong: unexpected occurrence of terminal symbol."
